@@ -13,8 +13,6 @@ import { LoginWrapper, Box, Header, LoginArea, Content } from "./style";
 export const Login = () => {
   const navigate = useNavigate();
   const [loginData, setLogindata] = useState();
-  const [fbUser, setFbUser] = useState();
-  const [gUser, setGUser] = useState();
   const [errors, setErrors] = useState("");
 
   const inputHandler = (e) => {
@@ -28,13 +26,13 @@ export const Login = () => {
         `${BASIC_DB_URL}/search?email=${loginData?.email}&password=${loginData?.password}`
       )
       .then((res) => {
-        console.log("login", res);
         if (
           res.data[0]?.email === loginData.email &&
           res.data[0]?.password === loginData.password
         ) {
           navigate("/main");
           setErrors(null);
+          localStorage.setItem("currentUser", loginData.email);
         } else {
           setErrors("Wrong email or password. Try again");
         }
@@ -42,13 +40,13 @@ export const Login = () => {
   };
 
   const onSuccess = async (resp) => {
-    console.log("RESP", resp);
     axios
       .get(`${BASIC_DB_URL}/search?email=${resp.profileObj.email}`)
       .then((res) => {
         if (res.data.length > 0) {
           navigate("/main");
           setErrors(null);
+          localStorage.setItem("currentUser", resp.profileObj.email);
         } else {
           axios
             .post(BASIC_DB_URL, {
@@ -57,8 +55,8 @@ export const Login = () => {
               userData: resp?.profileObj,
             })
             .then((res) => {
-              console.log("NEW USER resp", res);
               if (res.status === 201) {
+                localStorage.setItem("currentUser", resp.profileObj.email);
                 navigate("/main");
                 setErrors(null);
               } else {
@@ -76,18 +74,9 @@ export const Login = () => {
   const responseFacebook = (response) => {
     console.log(response);
   };
-
-  const createNewUser = (data) => {
-    const newUser = {
-      id: data.googleId || data.id,
-      email: data.email,
-      password: null,
-      userData: data,
-    };
-    axios.post(BASIC_DB_URL, newUser);
-  };
-
   useEffect(() => {
+    const isLogged = localStorage.getItem("currentUser");
+    isLogged && navigate("/main/integrations");
     const initClient = () => {
       gapi.client.init({
         clientId: CLIENTID,
@@ -102,42 +91,43 @@ export const Login = () => {
       <LoginWrapper>
         <Header>
           <span>FB GROUP@</span>
-          <Button onClick={goToRegister} type="link">
+          <Button onClick={goToRegister} type="primary">
             Sign Up
           </Button>
         </Header>
         <Content>
           <LoginArea>
-            <Box width="180px" m="10px auto">
+            <Typography.Title style={{ color: "#fff" }}>Login</Typography.Title>
+            <Box width="280px" m="10px auto">
               <Input
                 name="email"
                 placeholder="email"
-                status={errors ? "error" : null}
                 size="large"
                 onChange={inputHandler}
               />
             </Box>
-            <Box width="180px" m="10px auto">
+            <Box width="280px" m="10px auto">
               <Input.Password
                 name="password"
                 placeholder="password"
                 size="large"
-                status={errors ? "error" : null}
                 onChange={inputHandler}
               />
             </Box>
-            <Box width="180px" m="0 auto">
+            <Box width="280px" m="0 auto">
               <Button
                 onClick={handleLogin}
                 disabled={
                   !loginData?.email.match(MAIL_REGEXP) || !loginData?.password
                 }
+                type="primary"
+                size="large"
                 block
               >
                 Login
               </Button>
             </Box>
-            <Box width="180px" m="10px auto" br="16px" height="20px">
+            <Box width="190px" m="10px auto" br="16px">
               <GoogleLogin
                 clientId={CLIENTID}
                 buttonText="Sign in with Google"
@@ -146,7 +136,7 @@ export const Login = () => {
                 cookiePolicy="single_host_origin"
               />
             </Box>
-            <Box width="180px" m="10px auto">
+            <Box width="190px" m="10px auto">
               <FacebookLogin
                 appId="5843615565719699"
                 autoLoad={true}
@@ -155,9 +145,9 @@ export const Login = () => {
                 size="small"
               />
             </Box>
-            <Box>
+            <Box width="280px" m="10px auto">
               {errors && (
-                <Typography.Text type="danger" style={{ fontSize: 10 }}>
+                <Typography.Text type="danger" style={{ fontSize: 14 }}>
                   {errors}
                 </Typography.Text>
               )}
