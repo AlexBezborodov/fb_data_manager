@@ -3,10 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Button, Input, Typography } from "antd";
 import axios from "axios";
 import { gapi } from "gapi-script";
+import moment from "moment";
 import FacebookLogin from "react-facebook-login";
 import { GoogleLogin } from "react-google-login";
 import { useNavigate } from "react-router";
 
+import { getUserKey } from "../../utils/utils";
 import { BASIC_DB_URL, CLIENTID, MAIL_REGEXP } from "../../variables";
 import { LoginWrapper, Box, Header, LoginArea, Content } from "./style";
 
@@ -18,47 +20,86 @@ export const Login = () => {
   const inputHandler = (e) => {
     setLogindata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
   const goToRegister = () => navigate("/sign-up");
+
+  const checkUser = (user, currentEmail, oauth = false) => {
+    if (oauth) {
+      const key = getUserKey(user);
+      return !!(user[key]?.email === currentEmail);
+    } else {
+      if (getUserKey(user).length === 1) {
+        const key = getUserKey(user);
+        if (
+          user[key].email === loginData.email &&
+          user[key].ipd === loginData.password
+        ) {
+          setErrors(null);
+          localStorage.setItem("currentUser", loginData.email);
+          localStorage.setItem("userId", user[key].id);
+          navigate("/main");
+          return true;
+        } else {
+          setErrors("Wrong email or password. Try again");
+          return false;
+        }
+      } else {
+        setErrors("User not registered");
+        return false;
+      }
+    }
+  };
 
   const handleLogin = () => {
     axios
       .get(
-        `${BASIC_DB_URL}/search?email=${loginData?.email}&password=${loginData?.password}`
+        `${BASIC_DB_URL}/users.json?orderBy="email"&equalTo="${loginData.email}"`
       )
       .then((res) => {
-        if (
-          res.data[0]?.email === loginData.email &&
-          res.data[0]?.password === loginData.password
-        ) {
-          navigate("/main");
-          setErrors(null);
-          localStorage.setItem("currentUser", loginData.email);
-        } else {
-          setErrors("Wrong email or password. Try again");
-        }
+        checkUser(res.data);
       });
   };
 
-  const onSuccess = async (resp) => {
-    axios
-      .get(`${BASIC_DB_URL}/search?email=${resp.profileObj.email}`)
+  const oauthLogin = async (respData) => {
+    const { id, email, name } = respData;
+    const config = {
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    };
+
+    const newUser = {
+      [`user${id}`]: {
+        id,
+        email,
+        name,
+        ipd: "test1",
+        userPlan: "free",
+        fbGroups: "",
+        scrappedData: "",
+        sentMessages: 0,
+        expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
+      },
+    };
+    await axios
+      .get(`${BASIC_DB_URL}/users.json?orderBy="email"&equalTo="${email}"`)
       .then((res) => {
-        if (res.data.length > 0) {
-          navigate("/main");
+        const key = getUserKey(res.data);
+        if (checkUser(res.data, email, true)) {
           setErrors(null);
-          localStorage.setItem("currentUser", resp.profileObj.email);
+          localStorage.setItem("currentUser", res.data[key].email);
+          localStorage.setItem("userId", res.data[key].id);
+          navigate("/main");
         } else {
           axios
-            .post(BASIC_DB_URL, {
-              id: resp.profileObj?.googleId,
-              email: resp.profileObj?.email,
-              userData: resp?.profileObj,
-            })
+            .patch(`${BASIC_DB_URL}/users.json`, newUser, config)
             .then((res) => {
-              if (res.status === 201) {
-                localStorage.setItem("currentUser", resp.profileObj.email);
-                navigate("/main");
+              const key = getUserKey(res.data);
+              if (res.status === 200) {
                 setErrors(null);
+                localStorage.setItem("currentUser", res.data[key].email);
+                localStorage.setItem("userId", res.data[key].id);
+                navigate("/main");
               } else {
                 setErrors("Can`t login with google.Try again later");
               }
@@ -67,13 +108,28 @@ export const Login = () => {
       });
   };
 
+  const onSuccess = async (resp) => {
+    const respData = {
+      id: resp.profileObj?.googleId,
+      email: resp.profileObj?.email,
+      name: resp?.profileObj.name,
+    };
+    oauthLogin(respData);
+  };
+
   const onFailure = (err) => {
     setErrors("Can`t login with google.Try again later");
   };
 
   const responseFacebook = (response) => {
-    console.log(response);
+    const respData = {
+      id: response.id,
+      email: response.email,
+      name: response.name,
+    };
+    oauthLogin(respData);
   };
+
   useEffect(() => {
     const isLogged = localStorage.getItem("currentUser");
     isLogged && navigate("/main/integrations");

@@ -1,29 +1,10 @@
 {
-  "short_name": "fb groups helper",
-  "name": "FB groups",
-  "description": "Extension for work with facebook groups",
+  "name": "fb groups helper app",
+  "description": "App for work with facebook groups",
   "version": "1.0",
-  "manifest_version": 2,
-  "browser_action": {
-    "default_popup": "index.html",
-    "default_title": "Click to open"
-  },
   "icons": {
     "16": "logo192.png",
     "48": "logo192.png",
     "128": "logo192.png"
-  },
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  },
-  "permissions": [
-    "tabs",
-    "activeTab",
-    "*://apis.google.com/*"
-],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  }
 }
