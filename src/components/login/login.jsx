@@ -15,6 +15,7 @@ import { LoginWrapper, Box, Header, LoginArea, Content } from "./style";
 export const Login = () => {
   const navigate = useNavigate();
   const [loginData, setLogindata] = useState();
+  const [fbUser, setFbUser] = useState();
   const [errors, setErrors] = useState("");
 
   const inputHandler = (e) => {
@@ -28,7 +29,7 @@ export const Login = () => {
       const key = getUserKey(user);
       return !!(user[key]?.email === currentEmail);
     } else {
-      if (getUserKey(user).length === 1) {
+      if (getUserKey(user)) {
         const key = getUserKey(user);
         if (
           user[key].email === loginData.email &&
@@ -38,6 +39,7 @@ export const Login = () => {
           localStorage.setItem("currentUser", loginData.email);
           localStorage.setItem("userId", user[key].id);
           navigate("/main");
+          setLogindata(null);
           return true;
         } else {
           setErrors("Wrong email or password. Try again");
@@ -56,7 +58,7 @@ export const Login = () => {
         `${BASIC_DB_URL}/users.json?orderBy="email"&equalTo="${loginData.email}"`
       )
       .then((res) => {
-        checkUser(res.data);
+        checkUser(res.data, loginData.email);
       });
   };
 
@@ -94,8 +96,8 @@ export const Login = () => {
           axios
             .patch(`${BASIC_DB_URL}/users.json`, newUser, config)
             .then((res) => {
-              const key = getUserKey(res.data);
               if (res.status === 200) {
+                const key = getUserKey(res.data);
                 setErrors(null);
                 localStorage.setItem("currentUser", res.data[key].email);
                 localStorage.setItem("userId", res.data[key].id);
@@ -127,7 +129,11 @@ export const Login = () => {
       email: response.email,
       name: response.name,
     };
-    oauthLogin(respData);
+    setFbUser(respData);
+  };
+
+  const fbLogin = () => {
+    oauthLogin(fbUser);
   };
 
   useEffect(() => {
@@ -198,6 +204,7 @@ export const Login = () => {
                 autoLoad={true}
                 fields="name,email,picture"
                 callback={responseFacebook}
+                onClick={fbLogin}
                 size="small"
               />
             </Box>
