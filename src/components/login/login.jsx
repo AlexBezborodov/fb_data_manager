@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Input, Typography } from "antd";
+import { Button, Input, Typography, Modal } from "antd";
 import axios from "axios";
 import { gapi } from "gapi-script";
 import moment from "moment";
@@ -17,6 +17,20 @@ export const Login = () => {
   const [loginData, setLogindata] = useState();
   const [fbUser, setFbUser] = useState();
   const [errors, setErrors] = useState("");
+  const [tempPasword] = useState(`user${Math.floor(Math.random() * 1000)}`);
+  const [loginKeys, setLoginKeys] = useState();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    navigate("/main");
+    localStorage.setItem("currentUser", loginKeys.email);
+    localStorage.setItem("userId", loginKeys.id);
+  };
 
   const inputHandler = (e) => {
     setLogindata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -75,7 +89,7 @@ export const Login = () => {
         id,
         email,
         name,
-        ipd: "test1",
+        ipd: tempPasword,
         userPlan: "free",
         fbGroups: "",
         scrappedData: "",
@@ -99,9 +113,11 @@ export const Login = () => {
               if (res.status === 200) {
                 const key = getUserKey(res.data);
                 setErrors(null);
-                localStorage.setItem("currentUser", res.data[key].email);
-                localStorage.setItem("userId", res.data[key].id);
-                navigate("/main");
+                setLoginKeys({
+                  email: res.data[key].email,
+                  id: res.data[key].id,
+                });
+                showModal();
               } else {
                 setErrors("Can`t login with google.Try again later");
               }
@@ -218,6 +234,12 @@ export const Login = () => {
           </LoginArea>
         </Content>
       </LoginWrapper>
+      <Modal title="Temporary Password" open={isModalOpen} onOk={handleOk}>
+        <p>
+          Your temporary password <bold>{tempPasword}</bold>
+        </p>
+        <span>Please change password after login in profile setting</span>
+      </Modal>
     </>
   );
 };
