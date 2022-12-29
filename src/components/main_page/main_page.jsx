@@ -32,7 +32,12 @@ export const MainPage = () => {
   }, [pathname]);
 
   return (
-    <Layout style={{ width: "100%", height: "100%" }}>
+    <Layout
+      style={{
+        width: "100%",
+        height: "100vh",
+      }}
+    >
       <Sider
         trigger={null}
         collapsible
@@ -54,6 +59,7 @@ export const MainPage = () => {
         <Menu
           theme="light"
           mode="inline"
+          style={{ overflowY: "auto" }}
           defaultSelectedKeys={["integrations"]}
           items={[
             {
@@ -120,9 +126,8 @@ export const MainPage = () => {
       <Layout className="site-layout">
         <Content
           style={{
-            margin: "10px",
             padding: 10,
-            minHeight: 350,
+            overflowY: "auto",
           }}
         >
           <Outlet />

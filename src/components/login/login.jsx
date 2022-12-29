@@ -234,7 +234,12 @@ export const Login = () => {
           </LoginArea>
         </Content>
       </LoginWrapper>
-      <Modal title="Temporary Password" open={isModalOpen} onOk={handleOk}>
+      <Modal
+        title="Temporary Password"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleOk}
+      >
         <p>
           Your temporary password <bold>{tempPasword}</bold>
         </p>
