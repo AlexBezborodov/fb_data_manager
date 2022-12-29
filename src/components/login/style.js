@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const LoginWrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: rgb(255, 255, 255);
   background: linear-gradient(
     349deg,

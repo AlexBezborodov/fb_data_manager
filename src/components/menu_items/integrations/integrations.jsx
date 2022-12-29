@@ -2,23 +2,49 @@ import React, { useState } from "react";
 
 import { Button, message, Steps } from "antd";
 
-import { ContentContainer, Box, ActionsContainer, Wrapper } from "./styles";
-const steps = [
-  {
-    title: "First",
-    content: "First-content",
-  },
-  {
-    title: "Second",
-    content: "Second-content",
-  },
-  {
-    title: "Last",
-    content: "Last-content",
-  },
-];
+import { FirstStep } from "./first_step";
+import { SecondStep } from "./second_step";
+import {
+  ContentContainer,
+  Container,
+  ActionsContainer,
+  Wrapper,
+} from "./styles";
+import { ThirdStep } from "./third_step/third_step";
+
 export const Integrations = () => {
   const [current, setCurrent] = useState(0);
+  const [data, setdata] = useState();
+
+  const inputHandler = (e) => {
+    setdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const steps = [
+    {
+      title: "Add FB group",
+      content: <FirstStep {...{ data, inputHandler }} />,
+    },
+    {
+      title: "Add your google sheet",
+      content: <SecondStep {...{ data, inputHandler }} />,
+    },
+    {
+      title: "Finish",
+      content: <ThirdStep {...{ data }} />,
+    },
+  ];
+
+  const checkDisabled = () => {
+    switch (current) {
+      case 0:
+        return !data?.fbName || !data?.fbLink;
+      case 1:
+        return !data?.gsheetLink;
+      default:
+        return false;
+    }
+  };
   const next = () => {
     setCurrent(current + 1);
   };
@@ -27,29 +53,20 @@ export const Integrations = () => {
   };
 
   const complete = () => {
-    message.success("Processing complete!");
+    message.success("Integration succefully completed!");
     setCurrent(0);
+    setdata(null);
   };
   const items = steps.map((item) => ({
     key: item.title,
     title: item.title,
   }));
   return (
-    <Box>
+    <Container>
       <Steps current={current} items={items} />
       <Wrapper>
         <ContentContainer>{steps[current].content}</ContentContainer>
         <ActionsContainer>
-          {current < steps.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Next
-            </Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button type="primary" onClick={complete}>
-              Done
-            </Button>
-          )}
           {current > 0 && (
             <Button
               style={{
@@ -60,8 +77,22 @@ export const Integrations = () => {
               Previous
             </Button>
           )}
+          {current < steps.length - 1 && (
+            <Button
+              type="primary"
+              onClick={() => next()}
+              disabled={checkDisabled()}
+            >
+              Next
+            </Button>
+          )}
+          {current === steps.length - 1 && (
+            <Button type="primary" onClick={complete}>
+              Done
+            </Button>
+          )}
         </ActionsContainer>
       </Wrapper>
-    </Box>
+    </Container>
   );
 };
