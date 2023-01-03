@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import {
   MenuOutlined,
@@ -13,12 +13,17 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Outlet, useNavigate } from "react-router-dom";
+
+import { CurrentUserContext } from "../../providers/current_user";
+import { BASIC_DB_URL } from "../../variables";
 const { Sider, Content } = Layout;
 
 export const MainPage = () => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+
   const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => {
@@ -26,10 +31,22 @@ export const MainPage = () => {
     navigate("/login");
   };
 
+  const fetchUserData = (userId) => {
+    axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
+      if (res.status === 200) {
+        setCurrentUser(res.data);
+      }
+    });
+  };
+
   useEffect(() => {
-    const isLogged = localStorage.getItem("currentUser");
-    !isLogged && navigate("/login");
-  }, [pathname]);
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetchUserData(userId);
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
   return (
     <Layout

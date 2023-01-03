@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { Button, message, Steps } from "antd";
+import axios from "axios";
 
+import { CurrentUserContext } from "../../../providers/current_user";
+import { BASIC_DB_URL, CONFIG } from "../../../variables";
 import { FirstStep } from "./first_step";
 import { SecondStep } from "./second_step";
 import {
@@ -13,6 +16,8 @@ import {
 import { ThirdStep } from "./third_step/third_step";
 
 export const Integrations = () => {
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+
   const [current, setCurrent] = useState(0);
   const [data, setdata] = useState();
 
@@ -52,10 +57,39 @@ export const Integrations = () => {
     setCurrent(current - 1);
   };
 
+  const saveIntegration = () => {
+    const userId = localStorage.getItem("userId");
+    const group = {
+      id: Math.floor(Math.random() * 1000000),
+      groupName: data.fbName,
+      groupLink: data.fbLink,
+      groupId: data.fbLink.replace(/\D/g, ""),
+      spreadsheetLink: data.gsheetLink,
+    };
+    const updatedData = currentUser?.fbGroups
+      ? [...currentUser.fbGroups, group]
+      : [group];
+
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...currentUser, fbGroups: updatedData },
+        CONFIG
+      )
+      .then((res) => {
+        console.log("res", res);
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          message.success("Integration succefully completed!");
+          setCurrent(0);
+          setdata(null);
+        } else {
+          alert("Something went wrong. Try again later");
+        }
+      });
+  };
   const complete = () => {
-    message.success("Integration succefully completed!");
-    setCurrent(0);
-    setdata(null);
+    saveIntegration();
   };
   const items = steps.map((item) => ({
     key: item.title,

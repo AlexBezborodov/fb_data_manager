@@ -16,11 +16,12 @@ import {
 import { SignUp } from "./components/sign_up";
 import { StartPage } from "./components/start_page";
 import "./App.css";
+import { CurrentUserProvider } from "./providers/current_user";
 
 function App() {
   return (
     <div className="App">
-      <>
+      <CurrentUserProvider>
         <Router>
           <Routes>
             <Route path="/" element={<StartPage />} />
@@ -37,7 +38,7 @@ function App() {
             </Route>
           </Routes>
         </Router>
-      </>
+      </CurrentUserProvider>
     </div>
   );
 }

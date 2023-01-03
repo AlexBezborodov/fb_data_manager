@@ -9,7 +9,7 @@ import { GoogleLogin } from "react-google-login";
 import { useNavigate } from "react-router";
 
 import { getUserKey } from "../../utils/utils";
-import { BASIC_DB_URL, CLIENTID, MAIL_REGEXP } from "../../variables";
+import { BASIC_DB_URL, CLIENTID, MAIL_REGEXP, CONFIG } from "../../variables";
 import { LoginWrapper, Box, Header, LoginArea, Content } from "./style";
 
 export const Login = () => {
@@ -78,11 +78,6 @@ export const Login = () => {
 
   const oauthLogin = async (respData) => {
     const { id, email, name } = respData;
-    const config = {
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    };
 
     const newUser = {
       [`user${id}`]: {
@@ -91,7 +86,6 @@ export const Login = () => {
         name,
         ipd: tempPasword,
         userPlan: "free",
-        fbGroups: "",
         scrappedData: "",
         sentMessages: 0,
         expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
@@ -108,7 +102,7 @@ export const Login = () => {
           navigate("/main");
         } else {
           axios
-            .patch(`${BASIC_DB_URL}/users.json`, newUser, config)
+            .patch(`${BASIC_DB_URL}/users.json`, newUser, CONFIG)
             .then((res) => {
               if (res.status === 200) {
                 const key = getUserKey(res.data);
