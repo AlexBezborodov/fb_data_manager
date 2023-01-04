@@ -5,9 +5,10 @@ import axios from "axios";
 import moment from "moment";
 import { useNavigate } from "react-router";
 
+import { Box } from "../../global_styles/global_styles";
 import { getUserKey } from "../../utils/utils";
 import { BASIC_DB_URL, MAIL_REGEXP } from "../../variables";
-import { LoginWrapper, Box, Header, LoginArea, Content } from "../login/style";
+import { LoginWrapper, Header, LoginArea, Content } from "../login/style";
 
 export const SignUp = () => {
   const navigate = useNavigate();

@@ -7,11 +7,12 @@ export const Container = styled.div`
   border: 1px solid grey;
 `;
 export const ContentContainer = styled.div`
-  height: 2000px;
+  height: 750px;
   background: lightgrey;
   border-radius: 1rem;
   margin: 1rem;
   padding: 1rem;
+  overflow-y: auto;
 `;
 
 export const ActionsContainer = styled.div`
@@ -22,5 +23,4 @@ export const ActionsContainer = styled.div`
 export const Wrapper = styled.div`
   margin: 0 auto;
   height: 87vh;
-  overflow-y: auto;
 `;

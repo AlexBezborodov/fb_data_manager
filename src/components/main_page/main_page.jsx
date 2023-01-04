@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import axios from "axios";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { CurrentUserContext } from "../../providers/current_user";
 import { BASIC_DB_URL } from "../../variables";
@@ -22,7 +22,8 @@ const { Sider, Content } = Layout;
 
 export const MainPage = () => {
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const { pathname } = useLocation();
+  const { setCurrentUser } = useContext(CurrentUserContext);
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -77,7 +78,7 @@ export const MainPage = () => {
           theme="light"
           mode="inline"
           style={{ overflowY: "auto" }}
-          defaultSelectedKeys={["integrations"]}
+          defaultSelectedKeys={[pathname.match(/([^/]*)\/*$/)[1]]}
           items={[
             {
               key: "integrations",
@@ -144,7 +145,6 @@ export const MainPage = () => {
         <Content
           style={{
             padding: 10,
-            overflowY: "auto",
           }}
         >
           <Outlet />

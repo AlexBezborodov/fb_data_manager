@@ -3,7 +3,7 @@ import React from "react";
 import { Typography } from "antd";
 import PropTypes from "prop-types";
 
-import { Box } from "../../../login/style";
+import { Box } from "../../../../global_styles/global_styles";
 import { StepWrapper } from "../styles";
 
 export const ThirdStep = ({ data }) => {

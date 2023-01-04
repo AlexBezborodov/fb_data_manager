@@ -13,11 +13,6 @@ export const LoginWrapper = styled.div`
   );
 `;
 
-export const Box = styled.div`
-  padding: ${(props) => props.p};
-  margin: ${(props) => props.m};
-  width: ${(props) => props.width};
-`;
 export const Header = styled.div`
   height: 60px;
   display: flex;

@@ -8,9 +8,10 @@ import FacebookLogin from "react-facebook-login";
 import { GoogleLogin } from "react-google-login";
 import { useNavigate } from "react-router";
 
+import { Box } from "../../global_styles/global_styles";
 import { getUserKey } from "../../utils/utils";
 import { BASIC_DB_URL, CLIENTID, MAIL_REGEXP, CONFIG } from "../../variables";
-import { LoginWrapper, Box, Header, LoginArea, Content } from "./style";
+import { LoginWrapper, Header, LoginArea, Content } from "./style";
 
 export const Login = () => {
   const navigate = useNavigate();
