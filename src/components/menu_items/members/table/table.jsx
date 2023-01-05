@@ -29,17 +29,17 @@ export const CustomTable = ({
       return searchQuery.length
         ? items.filter(
             (item) =>
-              item.name.includes(searchQuery) ||
-              item.q1.includes(searchQuery) ||
-              item.q2.includes(searchQuery) ||
-              item.q3.includes(searchQuery) ||
-              item.details.includes(searchQuery)
+              item?.name.includes(searchQuery) ||
+              item?.q1.includes(searchQuery) ||
+              item?.q2.includes(searchQuery) ||
+              item?.q3.includes(searchQuery) ||
+              item?.details.includes(searchQuery)
           )
         : items;
     } else {
       return searchQuery.length
         ? items.filter((item) =>
-            item[filterQuery].toLowerCase().includes(searchQuery.toLowerCase())
+            item[filterQuery]?.toLowerCase().includes(searchQuery.toLowerCase())
           )
         : items;
     }

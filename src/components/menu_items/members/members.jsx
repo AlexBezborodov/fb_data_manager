@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import { SettingOutlined } from "@ant-design/icons";
-import { Button, message, Typography, Input } from "antd";
+import { Button, message, Typography, Input, Avatar } from "antd";
 import axios from "axios";
 import moment from "moment";
 
@@ -42,6 +42,25 @@ export const Members = () => {
     styles: { width: "100%" },
   };
 
+  const transformData = (userData) => {
+    if (userData) {
+      return userData.map((item, i) => ({
+        key: item.id,
+        avatar: item.avatarUrl,
+        name: item.user,
+        q1: `question ${i + 1}`,
+        a1: `answer ${i + 1}`,
+        q2: `question 22${i + 1}`,
+        a2: `answer 22${i + 1}`,
+        q3: `question 33${i + 1}`,
+        a3: `answer 33${i + 1}`,
+        profileLink: item.profileLink,
+        details: item?.basicInfo ? item.basicInfo?.toString() : "",
+      }));
+    } else {
+      return [];
+    }
+  };
   const saveList = () => {
     const userId = localStorage.getItem("userId");
     const checkedData = selectedRowKeys.map((index) => data[index]);
@@ -103,7 +122,7 @@ export const Members = () => {
               <BasicSearch value={searchValue} setValue={setSearchValue} />
             </Box>
             <CustomTable
-              data={data}
+              data={transformData(currentUser?.scrappedData)}
               searchQuery={searchValue}
               columns={columns.filter((item) => item.visible)}
               filterQuery={activeFilter}
@@ -161,6 +180,10 @@ const filters = [
     label: "All",
   },
   {
+    value: "name",
+    label: "Name",
+  },
+  {
     value: "q1",
     label: "Question 1",
   },
@@ -188,7 +211,8 @@ const columns = [
   {
     title: "Profile photo",
     dataIndex: "avatar",
-    visible: false,
+    render: (url) => <Avatar size={70} src={url} />,
+    visible: true,
   },
   {
     title: "Full Name",
@@ -235,6 +259,11 @@ const columns = [
   {
     title: "Profile Link",
     dataIndex: "profileLink",
+    render: (text) => (
+      <a href={text} target="_blank" rel="noreferrer">
+        {text}
+      </a>
+    ),
     visible: true,
   },
   {

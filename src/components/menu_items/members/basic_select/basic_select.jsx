@@ -25,7 +25,7 @@ export const BasicSelect = ({
 BasicSelect.propTypes = {
   size: PropTypes.oneOf(["large", "middle", "small"]),
   defaultValue: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.string).isRequired,
+  options: PropTypes.arrayOf(PropTypes.object).isRequired,
   setValue: PropTypes.func.isRequired,
   styles: PropTypes.object,
 };
