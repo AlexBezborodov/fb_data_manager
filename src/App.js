@@ -31,7 +31,7 @@ function App() {
               <Route path="*" element={<Integrations />} />
               <Route path="members" element={<Members />} />
               <Route path="emails" element={<Emails />} />
-              <Route path="customize" element={<Customize />} />
+              <Route path="welcome-message" element={<Customize />} />
               <Route path="lists" element={<Lists />} />
               <Route path="groups" element={<Groups />} />
               <Route path="settings" element={<Settings />} />

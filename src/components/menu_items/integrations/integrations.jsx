@@ -84,7 +84,7 @@ export const Integrations = () => {
           setCurrent(0);
           setdata(null);
         } else {
-          alert("Something went wrong. Try again later");
+          message.error("Something went wrong. Try again later");
         }
       });
   };

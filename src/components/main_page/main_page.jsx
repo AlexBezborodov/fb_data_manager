@@ -6,7 +6,7 @@ import {
   ApartmentOutlined,
   UsergroupAddOutlined,
   MailOutlined,
-  ToolOutlined,
+  MessageOutlined,
   UnorderedListOutlined,
   GroupOutlined,
   SettingOutlined,
@@ -93,16 +93,16 @@ export const MainPage = () => {
               onClick: () => navigate("/main/members"),
             },
             {
+              key: "welcome-message",
+              icon: <MessageOutlined />,
+              label: "Welcome message",
+              onClick: () => navigate("/main/welcome-message"),
+            },
+            {
               key: "emails",
               icon: <MailOutlined />,
               label: "Emails",
               onClick: () => navigate("/main/emails"),
-            },
-            {
-              key: "customize",
-              icon: <ToolOutlined />,
-              label: "Customize",
-              onClick: () => navigate("/main/customize"),
             },
             {
               key: "lists",

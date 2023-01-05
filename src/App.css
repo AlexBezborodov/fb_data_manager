@@ -4,3 +4,8 @@
   margin: 0 auto;
   box-sizing: border-box;
 }
+
+:where(.css-dev-only-do-not-override-9ntgx0).ant-checkbox-wrapper+:where(.css-dev-only-do-not-override-9ntgx0).ant-checkbox-wrapper {
+  margin-inline-start: 0;
+  margin: 10px 0;
+}

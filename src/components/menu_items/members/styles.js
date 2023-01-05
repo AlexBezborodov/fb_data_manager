@@ -22,5 +22,5 @@ export const ActionsContainer = styled.div`
 `;
 export const Wrapper = styled.div`
   margin: 0 auto;
-  height: 87vh;
+  height: 89vh;
 `;

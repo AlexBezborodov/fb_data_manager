@@ -1,25 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Table } from "antd";
 import PropTypes from "prop-types";
 
-const data = [];
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    name: `Edward King ${i}`,
-    q1: `question ${i + 1}`,
-    a1: `answer ${i + 1}`,
-    q2: `question 22${i + 1}`,
-    a2: `answer 22${i + 1}`,
-    q3: `question 33${i + 1}`,
-    a3: `answer 33${i + 1}`,
-    profileLink: `www.facebook.com/${i + 1}`,
-  });
-}
-export const CustomTable = ({ searchQuery, columns }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
+export const CustomTable = ({
+  data,
+  searchQuery,
+  columns,
+  filterQuery,
+  selectedRowKeys,
+  setSelectedRowKeys,
+}) => {
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -34,9 +25,24 @@ export const CustomTable = ({ searchQuery, columns }) => {
   };
 
   const filteredData = (items) => {
-    return searchQuery.length
-      ? items.filter((item) => item.name.includes(searchQuery))
-      : items;
+    if (filterQuery === "all") {
+      return searchQuery.length
+        ? items.filter(
+            (item) =>
+              item.name.includes(searchQuery) ||
+              item.q1.includes(searchQuery) ||
+              item.q2.includes(searchQuery) ||
+              item.q3.includes(searchQuery) ||
+              item.details.includes(searchQuery)
+          )
+        : items;
+    } else {
+      return searchQuery.length
+        ? items.filter((item) =>
+            item[filterQuery].toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : items;
+    }
   };
   return (
     <div
@@ -46,18 +52,26 @@ export const CustomTable = ({ searchQuery, columns }) => {
         margin: "0 auto",
       }}
     >
-      <Table
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={filteredData(data)}
-        pagination={false}
-        scroll={{ x: "calc(700px + 50%)", y: 500 }}
-      />
+      {columns.length ? (
+        <Table
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={filteredData(data)}
+          pagination={false}
+          scroll={{ x: "calc(700px + 50%)", y: 500 }}
+        />
+      ) : (
+        <div>Empty table</div>
+      )}
     </div>
   );
 };
 
 CustomTable.propTypes = {
+  data: PropTypes.array,
   searchQuery: PropTypes.string,
   columns: PropTypes.array,
+  filterQuery: PropTypes.string,
+  selectedRowKeys: PropTypes.array,
+  setSelectedRowKeys: PropTypes.func.isRequired,
 };
