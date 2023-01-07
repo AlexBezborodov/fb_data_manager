@@ -22,6 +22,10 @@ export const FILTERS = [
     label: "Name",
   },
   {
+    value: "details",
+    label: "Details",
+  },
+  {
     value: "q1",
     label: "Question 1",
   },
@@ -44,10 +48,6 @@ export const FILTERS = [
   {
     value: "a3",
     label: "Answer 3",
-  },
-  {
-    value: "details",
-    label: "Details",
   },
 ];
 export const GROUPS = [

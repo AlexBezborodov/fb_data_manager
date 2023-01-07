@@ -10,3 +10,7 @@
   margin-inline-start: 0;
   margin: 10px 0;
 }
+
+.ant-table-body {
+  min-height: 500px;
+}

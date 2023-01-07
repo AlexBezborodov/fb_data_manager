@@ -128,6 +128,19 @@ export const Members = () => {
 
   const userId = localStorage.getItem("userId");
 
+  const modifyGroups = () => {
+    if (currentUser?.fbGroups) {
+      return [
+        ...GROUPS,
+        ...currentUser.fbGroups.map((group) => ({
+          value: group.groupId,
+          label: group.groupName,
+        })),
+      ];
+    } else {
+      return GROUPS;
+    }
+  };
   const selectProps = {
     size: "large",
     options: FILTERS,
@@ -136,7 +149,7 @@ export const Members = () => {
   };
   const groupsSelectProps = {
     size: "large",
-    options: GROUPS,
+    options: modifyGroups(),
     setValue: setActiveMainFilter,
     styles: { width: "100%" },
   };
