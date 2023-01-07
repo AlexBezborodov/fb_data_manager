@@ -7,10 +7,8 @@ import moment from "moment";
 
 import { Box } from "../../../global_styles/global_styles";
 import { CurrentUserContext } from "../../../providers/current_user";
-import { BASIC_DB_URL, CONFIG } from "../../../variables";
-import { BasicModal } from "./basic_modal/basic_modal";
-import { BasicSearch } from "./basic_search/basic_search";
-import { BasicSelect } from "./basic_select";
+import { BASIC_DB_URL, CONFIG, FILTERS, GROUPS } from "../../../variables";
+import { BasicModal, BasicSearch, BasicSelect } from "../../basic_components";
 import { ColumnsPreferences } from "./columns_preferences/columns_preferences";
 import { Container, Wrapper, ContentContainer } from "./styles";
 import { CustomTable } from "./table";
@@ -113,9 +111,9 @@ export const Members = () => {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
   const [tableData, setTableData] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [activeFilter, setActiveFilter] = useState(filters[0].value);
+  const [activeFilter, setActiveFilter] = useState(FILTERS[0].value);
 
-  const [activeMainFilter, setActiveMainFilter] = useState(groups[0].value);
+  const [activeMainFilter, setActiveMainFilter] = useState(GROUPS[0].value);
   const [searchValue, setSearchValue] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -128,13 +126,13 @@ export const Members = () => {
 
   const selectProps = {
     size: "large",
-    options: filters,
+    options: FILTERS,
     setValue: setActiveFilter,
     styles: { width: 150 },
   };
   const groupsSelectProps = {
     size: "large",
-    options: groups,
+    options: GROUPS,
     setValue: setActiveMainFilter,
     styles: { width: "100%" },
   };
@@ -300,48 +298,3 @@ export const Members = () => {
     </>
   );
 };
-
-const filters = [
-  {
-    value: "all",
-    label: "All",
-  },
-  {
-    value: "name",
-    label: "Name",
-  },
-  {
-    value: "q1",
-    label: "Question 1",
-  },
-  {
-    value: "q2",
-    label: "Question 2",
-  },
-  {
-    value: "q3",
-    label: "Question 3",
-  },
-  {
-    value: "a1",
-    label: "Answer 1",
-  },
-  {
-    value: "a2",
-    label: "Answer 2",
-  },
-  {
-    value: "a3",
-    label: "Answer 3",
-  },
-  {
-    value: "details",
-    label: "Details",
-  },
-];
-const groups = [
-  {
-    value: "group",
-    label: "FB group",
-  },
-];

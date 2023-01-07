@@ -11,3 +11,48 @@ export const CONFIG = {
     "Content-type": "application/json; charset=UTF-8",
   },
 };
+
+export const FILTERS = [
+  {
+    value: "all",
+    label: "All",
+  },
+  {
+    value: "name",
+    label: "Name",
+  },
+  {
+    value: "q1",
+    label: "Question 1",
+  },
+  {
+    value: "q2",
+    label: "Question 2",
+  },
+  {
+    value: "q3",
+    label: "Question 3",
+  },
+  {
+    value: "a1",
+    label: "Answer 1",
+  },
+  {
+    value: "a2",
+    label: "Answer 2",
+  },
+  {
+    value: "a3",
+    label: "Answer 3",
+  },
+  {
+    value: "details",
+    label: "Details",
+  },
+];
+export const GROUPS = [
+  {
+    value: "group",
+    label: "FB group",
+  },
+];

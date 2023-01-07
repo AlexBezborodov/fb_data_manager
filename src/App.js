@@ -8,7 +8,7 @@ import {
   Integrations,
   Members,
   Emails,
-  Customize,
+  WelcomeMessage,
   Lists,
   Groups,
   Settings,
@@ -31,7 +31,7 @@ function App() {
               <Route path="*" element={<Integrations />} />
               <Route path="members" element={<Members />} />
               <Route path="emails" element={<Emails />} />
-              <Route path="welcome-message" element={<Customize />} />
+              <Route path="welcome-message" element={<WelcomeMessage />} />
               <Route path="lists" element={<Lists />} />
               <Route path="groups" element={<Groups />} />
               <Route path="settings" element={<Settings />} />
