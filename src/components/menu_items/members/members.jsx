@@ -118,6 +118,7 @@ export const Members = () => {
   const [activeFilter, setActiveFilter] = useState(FILTERS[0].value);
 
   const [activeMainFilter, setActiveMainFilter] = useState(GROUPS[0].value);
+  const [activeGroup, setActiveGroup] = useState();
   const [searchValue, setSearchValue] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -154,6 +155,19 @@ export const Members = () => {
     styles: { width: "100%" },
   };
 
+  const listsOptions = modifyGroups().filter((item) => item.value !== "all");
+  const listSelectProps = {
+    size: "large",
+    options: listsOptions,
+    setValue: setActiveGroup,
+    styles: { width: "100%" },
+    defaultValue:
+      activeMainFilter !== "all"
+        ? modifyGroups().filter((item) => item.value !== "activeMainFilter")[0]
+            ?.value
+        : listsOptions[0]?.value,
+  };
+
   function transformData(userData) {
     if (userData) {
       setTableData(
@@ -184,6 +198,7 @@ export const Members = () => {
     const list = {
       id: Math.floor(Math.random() * 1000000),
       listName,
+      groupId: activeGroup,
       createdDate: moment().format("DD/MM/YYYY HH:mm"),
       updatedDate: moment().format("DD/MM/YYYY HH:mm"),
       data: checkedData,
@@ -244,8 +259,10 @@ export const Members = () => {
 
   const filteredByGroup = (items) => {
     if (activeMainFilter === "all") {
+      setSelectedRowKeys([]);
       return items;
     } else {
+      setSelectedRowKeys([]);
       return items.filter((item) => item.groupId === activeMainFilter);
     }
   };
@@ -332,12 +349,12 @@ export const Members = () => {
             onChange={(e) => setListName(e.target.value)}
           />
         </Box>
+        <Typography.Text>Choose group</Typography.Text>
+        <Box m="15px 0">
+          <BasicSelect {...listSelectProps} />
+        </Box>
         <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            type="primary"
-            onClick={saveList}
-            disabled={!selectedRowKeys.length}
-          >
+          <Button type="primary" onClick={saveList} disabled={!listName.length}>
             Save list
           </Button>
         </Box>

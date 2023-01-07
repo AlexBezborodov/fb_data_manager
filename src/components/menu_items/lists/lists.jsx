@@ -1,7 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 
-import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, message, Avatar } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import { Button, message, Typography } from "antd";
 import axios from "axios";
 import moment from "moment";
 
@@ -11,6 +15,7 @@ import { BASIC_DB_URL, CONFIG, GROUPS } from "../../../variables";
 import { BasicModal, BasicSearch, BasicSelect } from "../../basic_components";
 import { CustomTable } from "../../basic_components/table";
 import { Container, Wrapper, ContentContainer } from "./styles";
+import { CustomTags } from "./tags";
 
 export const Lists = () => {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
@@ -54,6 +59,15 @@ export const Lists = () => {
       visible: true,
       render: (index, item) => (
         <Box style={{ display: "flex", justifyContent: "center" }}>
+          <Box m="0 10px">
+            <Button
+              type="ghost"
+              shape="circle"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => editTag(item.key)}
+            />
+          </Box>
           <Button
             type="primary"
             shape="circle"
@@ -68,12 +82,11 @@ export const Lists = () => {
   ];
 
   const [tableData, setTableData] = useState([]);
-  console.log("tableData", tableData);
   const [activeMainFilter, setActiveMainFilter] = useState(GROUPS[0].value);
   const [searchValue, setSearchValue] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [tags, setCurrentTags] = useState({ tags: [], currentItemId: null });
   const userId = localStorage.getItem("userId");
 
   const modifyGroups = () => {
@@ -98,7 +111,6 @@ export const Lists = () => {
   };
 
   function transformData(listsData) {
-    console.log("listsData", listsData);
     if (listsData) {
       setTableData(
         listsData.map((item, i) => ({
@@ -144,17 +156,63 @@ export const Lists = () => {
     });
   };
 
+  const filteredByGroup = (items) => {
+    if (activeMainFilter === "all") {
+      return items;
+    } else {
+      return items.filter((item) => item.groupId === activeMainFilter);
+    }
+  };
+
+  const editTag = (id) => {
+    setModalOpen(true);
+    const currentItem = currentUser?.lists.filter((item) => item.id === id);
+    setCurrentTags({
+      currentItemId: id,
+      tags: currentItem[0]?.tags === "no tags" ? [] : currentItem[0]?.tags,
+    });
+  };
+
+  const saveTags = () => {
+    const index = currentUser?.lists.findIndex(
+      (item) => item.id === tags.currentItemId
+    );
+    currentUser.lists[index].updatedDate = moment().format("DD/MM/YYYY HH:mm");
+    currentUser.lists[index].tags = [...tags.tags];
+    const updatedData = currentUser;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...updatedData },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          setModalOpen(false);
+          setCurrentTags({ tags: [], currentItemId: null });
+          message.success("Tag added successfully");
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+    setCurrentTags({ tags: [], currentItemId: null });
+  };
+
   useEffect(() => {
+    const filteredByGroupData = filteredByGroup(currentUser?.lists);
     if (searchValue) {
-      const filteredData = currentUser?.lists.filter((item) =>
+      const filteredData = filteredByGroupData.filter((item) =>
         item?.listName?.toLowerCase().includes(searchValue.toLowerCase())
       );
-      console.log("filteredData", filteredData);
       transformData(filteredData);
     } else {
-      transformData(currentUser?.lists);
+      transformData(filteredByGroupData);
     }
-  }, [currentUser?.lists, searchValue]);
+  }, [currentUser?.lists, searchValue, activeMainFilter]);
 
   return (
     <>
@@ -187,6 +245,17 @@ export const Lists = () => {
           </ContentContainer>
         </Wrapper>
       </Container>
+      <BasicModal open={modalOpen} closeModal={closeModal}>
+        <Typography.Title level={2}>Keywords</Typography.Title>
+        <Box>
+          <CustomTags incomeTags={tags?.tags} updateTags={setCurrentTags} />
+        </Box>
+        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button type="primary" onClick={saveTags}>
+            Save Tags
+          </Button>
+        </Box>
+      </BasicModal>
     </>
   );
 };
