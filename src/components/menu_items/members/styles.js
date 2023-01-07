@@ -13,6 +13,7 @@ export const ContentContainer = styled.div`
   margin: 1rem;
   padding: 1rem;
   overflow-y: auto;
+  position: relative;
 `;
 
 export const ActionsContainer = styled.div`

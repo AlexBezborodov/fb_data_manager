@@ -97,7 +97,7 @@ export const WelcomeMessage = () => {
               name="wMessage"
               placeholder="Here is your message"
               size="large"
-              value={data?.fbLink || ""}
+              value={data?.wMessage || ""}
               onChange={inputHandler}
             />
           </Box>
@@ -117,7 +117,7 @@ export const WelcomeMessage = () => {
           </Box>
         </ContentContainer>
         <ActionsContainer>
-          <Button type="primary" onClick={complete}>
+          <Button type="primary" disabled={!data?.wMessage} onClick={complete}>
             Save
           </Button>
         </ActionsContainer>

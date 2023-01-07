@@ -1,6 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 
-import { SettingOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  SettingOutlined,
+  DeleteOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 import { Button, message, Typography, Input, Avatar } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -215,6 +219,17 @@ export const Members = () => {
       });
   };
 
+  const refresh = () => {
+    axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
+      if (res.status === 200) {
+        setCurrentUser(res.data);
+        message.success("Data updated");
+      } else {
+        message.error("Something went wrong. Try again later");
+      }
+    });
+  };
+
   useEffect(() => {
     transformData(currentUser?.scrappedData);
   }, [currentUser?.scrappedData]);
@@ -253,6 +268,18 @@ export const Members = () => {
               filterQuery={activeFilter}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+            />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<ReloadOutlined />}
+              size="medium"
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+              }}
+              onClick={refresh}
             />
           </ContentContainer>
           <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
