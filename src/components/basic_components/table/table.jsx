@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 export const CustomTable = ({
   data,
-  searchQuery,
+  searchQuery = "",
   columns,
   filterQuery,
   selectedRowKeys,
@@ -14,15 +14,17 @@ export const CustomTable = ({
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
-    ],
-  };
+  const rowSelection = selectedRowKeys
+    ? {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        selections: [
+          Table.SELECTION_ALL,
+          Table.SELECTION_INVERT,
+          Table.SELECTION_NONE,
+        ],
+      }
+    : null;
 
   const filteredData = (items) => {
     if (filterQuery === "all") {
@@ -78,5 +80,5 @@ CustomTable.propTypes = {
   columns: PropTypes.array,
   filterQuery: PropTypes.string,
   selectedRowKeys: PropTypes.array,
-  setSelectedRowKeys: PropTypes.func.isRequired,
+  setSelectedRowKeys: PropTypes.func,
 };

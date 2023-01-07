@@ -13,9 +13,9 @@ import { Box } from "../../../global_styles/global_styles";
 import { CurrentUserContext } from "../../../providers/current_user";
 import { BASIC_DB_URL, CONFIG, FILTERS, GROUPS } from "../../../variables";
 import { BasicModal, BasicSearch, BasicSelect } from "../../basic_components";
+import { CustomTable } from "../../basic_components/table";
 import { ColumnsPreferences } from "./columns_preferences/columns_preferences";
 import { Container, Wrapper, ContentContainer } from "./styles";
-import { CustomTable } from "./table";
 
 export const Members = () => {
   const columns = [
