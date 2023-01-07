@@ -52,7 +52,7 @@ export const FILTERS = [
 ];
 export const GROUPS = [
   {
-    value: "group",
-    label: "FB group",
+    value: "all",
+    label: "All groups",
   },
 ];

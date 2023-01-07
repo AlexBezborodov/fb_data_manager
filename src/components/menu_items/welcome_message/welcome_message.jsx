@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { Button, message } from "antd";
 import { Input, Typography, Checkbox } from "antd";
@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { Box } from "../../../global_styles/global_styles";
 import { CurrentUserContext } from "../../../providers/current_user";
-import { BASIC_DB_URL, CONFIG, GROUPS } from "../../../variables";
+import { BASIC_DB_URL, GROUPS, CONFIG } from "../../../variables";
 import { BasicSelect } from "../../basic_components";
 import {
   ContentContainer,
@@ -18,9 +18,8 @@ import {
 export const WelcomeMessage = () => {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
 
-  const [current, setCurrent] = useState(0);
   const [data, setdata] = useState();
-  const [activeMainFilter, setActiveMainFilter] = useState(GROUPS[0].value);
+  const [activeGroup, setActiveGroup] = useState(GROUPS[0].value);
 
   const inputHandler = (e) => {
     setdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -29,37 +28,43 @@ export const WelcomeMessage = () => {
     setdata((prev) => ({ ...prev, isSendMessages: e.target.checked }));
   };
 
-  const groupsSelectProps = {
-    size: "large",
-    options: GROUPS,
-    setValue: setActiveMainFilter,
-    styles: { width: "100%" },
-  };
-
-  const checkDisabled = () => {
-    switch (current) {
-      case 0:
-        return !data?.fbName || !data?.fbLink;
-      case 1:
-        return !data?.gsheetLink;
-      default:
-        return false;
+  const modifyGroups = () => {
+    if (currentUser?.fbGroups) {
+      return [
+        ...GROUPS,
+        ...currentUser.fbGroups.map((group) => ({
+          value: group.groupId,
+          label: group.groupName,
+        })),
+      ];
+    } else {
+      return GROUPS;
     }
   };
 
-  const saveIntegration = () => {
-    const userId = localStorage.getItem("userId");
-    const group = {
-      id: Math.floor(Math.random() * 1000000),
-      groupName: data.fbName,
-      groupLink: data.fbLink,
-      groupId: data.fbLink.replace(/\D/g, ""),
-      spreadsheetLink: data.gsheetLink,
-    };
-    const updatedData = currentUser?.fbGroups
-      ? [...currentUser.fbGroups, group]
-      : [group];
+  const groupsSelectProps = {
+    size: "large",
+    options: modifyGroups(),
+    setValue: setActiveGroup,
+    styles: { width: "100%" },
+  };
 
+  const updateMessage = () => {
+    const userId = localStorage.getItem("userId");
+    let updatedData = null;
+    if (activeGroup == "all") {
+      updatedData = currentUser?.fbGroups.map((group) => {
+        return { ...group, welcomeMessage: data.wMessage };
+      });
+    } else {
+      updatedData = currentUser?.fbGroups.map((group) => {
+        if (group.groupId === activeGroup) {
+          return { ...group, welcomeMessage: data.wMessage };
+        } else {
+          return group;
+        }
+      });
+    }
     axios
       .patch(
         `${BASIC_DB_URL}/users/user${userId}.json`,
@@ -70,17 +75,32 @@ export const WelcomeMessage = () => {
         console.log("res", res);
         if (res.status === 200) {
           setCurrentUser(res.data);
-          message.success("Integration succefully completed!");
-          setCurrent(0);
+          message.success("Message succefully updated!");
           setdata(null);
         } else {
           message.error("Something went wrong. Try again later");
         }
       });
   };
-  const complete = () => {
-    saveIntegration();
+
+  const setMessage = () => {
+    if (activeGroup == "all") {
+      setdata((prev) => ({
+        ...prev,
+        wMessage: "default welcome message for all groups",
+      }));
+    } else {
+      const msg = currentUser?.fbGroups?.filter(
+        (group) => group.groupId === activeGroup
+      );
+      console.log("msg", msg);
+      setdata((prev) => ({ ...prev, wMessage: msg[0].welcomeMessage }));
+    }
   };
+
+  useEffect(() => {
+    setMessage();
+  }, [activeGroup]);
 
   return (
     <Container>
@@ -117,7 +137,11 @@ export const WelcomeMessage = () => {
           </Box>
         </ContentContainer>
         <ActionsContainer>
-          <Button type="primary" disabled={!data?.wMessage} onClick={complete}>
+          <Button
+            type="primary"
+            disabled={!data?.wMessage || ""}
+            onClick={updateMessage}
+          >
             Save
           </Button>
         </ActionsContainer>
