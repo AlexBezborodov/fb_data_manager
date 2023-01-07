@@ -155,7 +155,6 @@ export const Members = () => {
   };
 
   function transformData(userData) {
-    console.log("userData", userData);
     if (userData) {
       setTableData(
         userData.map((item, i) => ({
@@ -243,9 +242,17 @@ export const Members = () => {
     });
   };
 
+  const filteredByGroup = (items) => {
+    if (activeMainFilter === "all") {
+      return items;
+    } else {
+      return items.filter((item) => item.groupId === activeMainFilter);
+    }
+  };
+
   useEffect(() => {
-    transformData(currentUser?.scrappedData);
-  }, [currentUser?.scrappedData]);
+    transformData(filteredByGroup(currentUser?.scrappedData));
+  }, [currentUser?.scrappedData, activeMainFilter]);
 
   return (
     <>

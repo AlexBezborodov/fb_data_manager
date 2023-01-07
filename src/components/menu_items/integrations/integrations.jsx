@@ -77,7 +77,6 @@ export const Integrations = () => {
         CONFIG
       )
       .then((res) => {
-        console.log("res", res);
         if (res.status === 200) {
           setCurrentUser(res.data);
           message.success("Integration succefully completed!");
