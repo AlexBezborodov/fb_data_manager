@@ -323,6 +323,18 @@ const filters = [
     label: "Question 3",
   },
   {
+    value: "a1",
+    label: "Answer 1",
+  },
+  {
+    value: "a2",
+    label: "Answer 2",
+  },
+  {
+    value: "a3",
+    label: "Answer 3",
+  },
+  {
     value: "details",
     label: "Details",
   },
