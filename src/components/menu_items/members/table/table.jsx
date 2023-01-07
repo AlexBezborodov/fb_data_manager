@@ -47,6 +47,7 @@ export const CustomTable = ({
   return (
     <div
       style={{
+        minWidth: 850,
         height: 580,
         width: "100%",
         margin: "0 auto",
