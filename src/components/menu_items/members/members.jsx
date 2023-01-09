@@ -269,7 +269,8 @@ export const Members = () => {
 
   useEffect(() => {
     transformData(filteredByGroup(currentUser?.scrappedData));
-  }, [currentUser?.scrappedData, activeMainFilter]);
+  }, [currentUser?.scrappedData, activeMainFilter, visibleColumns]);
+  console.log("visibleColumns", visibleColumns);
 
   return (
     <>
@@ -301,7 +302,7 @@ export const Members = () => {
             <CustomTable
               data={tableData}
               searchQuery={searchValue}
-              columns={columns.filter((item) => item.visible)}
+              columns={visibleColumns.filter((item) => item.visible)}
               filterQuery={activeFilter}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}

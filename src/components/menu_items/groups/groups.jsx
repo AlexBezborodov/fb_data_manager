@@ -1,21 +1,22 @@
 import React, { useState, useContext, useEffect } from "react";
 
 import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, message, Typography } from "antd";
+import { Button, message, Typography, Input } from "antd";
 import axios from "axios";
 
 import { Box } from "../../../global_styles/global_styles";
 import { CurrentUserContext } from "../../../providers/current_user";
 import { BASIC_DB_URL, CONFIG } from "../../../variables";
-import { BasicSearch } from "../../basic_components";
+import { BasicSearch, BasicModal } from "../../basic_components";
 import { CustomTable } from "../../basic_components/table";
 import { Container, Wrapper, ContentContainer } from "./styles";
 
 export const Groups = () => {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const [modalOpen, setModalOpen] = useState(false);
   const columns = [
     {
-      title: "List name",
+      title: "Group name",
       dataIndex: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
@@ -30,16 +31,21 @@ export const Groups = () => {
       ),
     },
     {
-      title: "Send email",
-      dataIndex: "isSend",
-    },
-    {
       title: "Actions",
       dataIndex: "actions",
       visible: true,
       width: 90,
       render: (index, item) => (
         <Box style={{ display: "flex", justifyContent: "center" }}>
+          <Box m="0 10px">
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<DeleteOutlined />}
+              size="small"
+              onClick={() => editItem(item.key)}
+            />
+          </Box>
           <Button
             type="primary"
             shape="circle"
@@ -55,8 +61,13 @@ export const Groups = () => {
 
   const [tableData, setTableData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
+  const [editData, setEditData] = useState();
+  console.log("editData", editData);
   const userId = localStorage.getItem("userId");
+
+  const inputHandler = (e) => {
+    setEditData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   function transformData(listsData) {
     if (listsData) {
@@ -72,6 +83,40 @@ export const Groups = () => {
       setTableData([]);
     }
   }
+
+  const editItem = (id) => {
+    const index = currentUser?.fbGroups.findIndex((item) => item.id === id);
+    setModalOpen(true);
+    setEditData({
+      name: currentUser?.fbGroups[index].groupName,
+      link: currentUser?.fbGroups[index].spreadsheetLink,
+      id,
+    });
+  };
+  const updateItem = () => {
+    const index = currentUser?.fbGroups.findIndex(
+      (item) => item.id === editData.id
+    );
+
+    currentUser.fbGroups[index].groupName = editData?.name;
+    currentUser.fbGroups[index].spreadsheetLink = editData?.link;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...currentUser },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          message.success("Group updated!");
+          setModalOpen(false);
+          setEditData(null);
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
 
   const removeItem = (id) => {
     const updatedData = currentUser?.fbGroups.filter((item) => item.id !== id);
@@ -140,6 +185,41 @@ export const Groups = () => {
           </ContentContainer>
         </Wrapper>
       </Container>
+      <BasicModal
+        open={modalOpen}
+        closeModal={() => setModalOpen(false)}
+        title="Edit Group"
+      >
+        <Typography.Text>Edit group name</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="name"
+            placeholder="Group name"
+            size="large"
+            value={editData?.name || ""}
+            onChange={inputHandler}
+          />
+        </Box>
+        <Typography.Text>Edit spreadsheet link</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="link"
+            placeholder="Link"
+            size="large"
+            value={editData?.link || ""}
+            onChange={inputHandler}
+          />
+        </Box>
+        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            type="primary"
+            onClick={updateItem}
+            disabled={!editData?.name || !editData?.link}
+          >
+            Save list
+          </Button>
+        </Box>
+      </BasicModal>
     </>
   );
 };
