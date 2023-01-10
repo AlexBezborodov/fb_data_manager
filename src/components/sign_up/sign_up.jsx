@@ -44,6 +44,12 @@ export const SignUp = () => {
         fbGroups: "",
         scrappedData: "",
         sentMessages: 0,
+        planInfo: {
+          userPlan: "free",
+          scrapCounter: 0,
+          expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
+          sentMessages: 0,
+        },
         expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
       },
     };

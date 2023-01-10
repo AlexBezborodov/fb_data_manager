@@ -6,7 +6,7 @@ import {
   ReloadOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Button, message, Typography, Tag, Avatar } from "antd";
+import { Button, message, Typography, Tag, Avatar, Input } from "antd";
 import axios from "axios";
 import moment from "moment";
 
@@ -26,6 +26,26 @@ export const Lists = () => {
       dataIndex: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
       width: 300,
+      render: (index, item) => (
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>{item.name}</Box>
+          <Box m="0 10px">
+            <Button
+              type="ghost"
+              shape="circle"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => editItemListName(item.key)}
+            />
+          </Box>
+        </Box>
+      ),
     },
     {
       title: "Total members",
@@ -99,6 +119,7 @@ export const Lists = () => {
       title: "Actions",
       dataIndex: "actions",
       visible: true,
+      width: 100,
       render: (index, item) => (
         <Box style={{ display: "flex", justifyContent: "center" }}>
           <Button
@@ -120,9 +141,33 @@ export const Lists = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [membersOpenModal, setMembersOpenModal] = useState(false);
+  const [editNameModal, setEditNameModal] = useState(false);
+
   const [currentMembersList, setMCUrrentMembersList] = useState([]);
   const [tags, setCurrentTags] = useState({ tags: [], currentItemId: null });
+  const [currentListName, setCurrentListName] = useState({
+    newName: "",
+    currentItemId: null,
+  });
+
   const userId = localStorage.getItem("userId");
+  const actions = {
+    title: "Actions",
+    dataIndex: "actions",
+    visible: true,
+    render: (index, item) => (
+      <Box style={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<DeleteOutlined />}
+          size="small"
+          danger
+          onClick={() => removeUserFromList(item.key)}
+        />
+      </Box>
+    ),
+  };
 
   const modifyGroups = () => {
     if (currentUser?.fbGroups) {
@@ -180,6 +225,31 @@ export const Lists = () => {
         }
       });
   };
+  const removeUserFromList = (key) => {
+    const updatedList = currentMembersList.data.filter(
+      (item) => item.key !== key
+    );
+    const index = currentUser?.lists.findIndex(
+      (i) => i.id === currentMembersList.listId
+    );
+    currentUser.lists[index].data = updatedList;
+
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...currentUser },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          message.success("Item removed!");
+          setMCUrrentMembersList((prev) => ({ ...prev, data: updatedList }));
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
 
   const refresh = () => {
     axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
@@ -209,6 +279,15 @@ export const Lists = () => {
     });
   };
 
+  const editItemListName = (id) => {
+    setEditNameModal(true);
+    const currentItem = currentUser?.lists.filter((item) => item.id === id);
+    setCurrentListName({
+      currentItemId: id,
+      newName: currentItem[0].listName,
+    });
+  };
+
   const saveTags = () => {
     const index = currentUser?.lists.findIndex(
       (item) => item.id === tags.currentItemId
@@ -233,12 +312,42 @@ export const Lists = () => {
         }
       });
   };
+
+  const saveListName = () => {
+    const index = currentUser?.lists.findIndex(
+      (item) => item.id === currentListName.currentItemId
+    );
+    currentUser.lists[index].updatedDate = moment().format("DD/MM/YYYY HH:mm");
+    currentUser.lists[index].listName = currentListName.newName;
+    const updatedData = currentUser;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...updatedData },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          setEditNameModal(false);
+          setCurrentListName({ newName: "", currentItemId: null });
+          message.success("Name changed successfully");
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
+
   const closeModal = () => {
     setModalOpen(false);
     setCurrentTags({ tags: [], currentItemId: null });
   };
+  const closeEditModal = () => {
+    setEditNameModal(false);
+    setCurrentListName({ newName: "", currentItemId: null });
+  };
   const showMembersList = (item) => {
-    setMCUrrentMembersList(item.data);
+    setMCUrrentMembersList({ data: item.data, listId: item.key });
     setMembersOpenModal(true);
   };
 
@@ -305,7 +414,41 @@ export const Lists = () => {
         width="auto"
       >
         <Typography.Title level={2}>Saved Members</Typography.Title>
-        <CustomTable data={currentMembersList} columns={membersColumns} />
+        <CustomTable
+          data={currentMembersList.data}
+          columns={[...membersColumns, actions]}
+        />
+      </BasicModal>
+
+      <BasicModal
+        open={editNameModal}
+        closeModal={closeEditModal}
+        title="Edit Group"
+      >
+        <Typography.Text>Edit group name</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="name"
+            placeholder="Group name"
+            size="large"
+            value={currentListName.newName || ""}
+            onChange={(e) =>
+              setCurrentListName((prev) => ({
+                ...prev,
+                newName: e.target.value,
+              }))
+            }
+          />
+        </Box>
+        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            type="primary"
+            onClick={saveListName}
+            disabled={!currentListName}
+          >
+            Save list
+          </Button>
+        </Box>
       </BasicModal>
     </>
   );

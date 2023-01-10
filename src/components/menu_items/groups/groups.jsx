@@ -1,6 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 
-import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  ReloadOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import { Button, message, Typography, Input } from "antd";
 import axios from "axios";
 
@@ -41,7 +45,7 @@ export const Groups = () => {
             <Button
               type="primary"
               shape="circle"
-              icon={<DeleteOutlined />}
+              icon={<EditOutlined />}
               size="small"
               onClick={() => editItem(item.key)}
             />
@@ -62,7 +66,7 @@ export const Groups = () => {
   const [tableData, setTableData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [editData, setEditData] = useState();
-  console.log("editData", editData);
+
   const userId = localStorage.getItem("userId");
 
   const inputHandler = (e) => {
@@ -216,7 +220,7 @@ export const Groups = () => {
             onClick={updateItem}
             disabled={!editData?.name || !editData?.link}
           >
-            Save list
+            Update Group
           </Button>
         </Box>
       </BasicModal>

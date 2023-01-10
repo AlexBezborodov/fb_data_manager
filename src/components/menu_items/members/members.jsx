@@ -270,7 +270,6 @@ export const Members = () => {
   useEffect(() => {
     transformData(filteredByGroup(currentUser?.scrappedData));
   }, [currentUser?.scrappedData, activeMainFilter, visibleColumns]);
-  console.log("visibleColumns", visibleColumns);
 
   return (
     <>
@@ -350,8 +349,8 @@ export const Members = () => {
             onChange={(e) => setListName(e.target.value)}
           />
         </Box>
-        <Typography.Text>Choose group</Typography.Text>
-        <Box m="15px 0">
+        {/* <Typography.Text>Choose group</Typography.Text> */}
+        <Box m="15px 0" style={{ display: "none" }}>
           <BasicSelect {...listSelectProps} />
         </Box>
         <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
