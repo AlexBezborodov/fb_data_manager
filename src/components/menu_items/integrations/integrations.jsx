@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
-import { Button, message, Steps } from "antd";
+import { Button, message, Steps, Typography } from "antd";
 import axios from "axios";
 
 import { CurrentUserContext } from "../../../providers/current_user";
@@ -20,6 +20,7 @@ export const Integrations = () => {
 
   const [current, setCurrent] = useState(0);
   const [data, setdata] = useState();
+  const [isShow, setIsShow] = useState(true);
 
   const inputHandler = (e) => {
     setdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -94,38 +95,57 @@ export const Integrations = () => {
     key: item.title,
     title: item.title,
   }));
+
+  useEffect(() => {
+    const groupsLimit = JSON.parse(
+      localStorage.getItem("currentPlan")
+    ).groupsAmount;
+    if (groupsLimit && currentUser?.fbGroups?.length >= groupsLimit) {
+      setIsShow(false);
+    }
+  }, [currentUser]);
   return (
     <Container>
-      <Steps current={current} items={items} />
-      <Wrapper>
-        <ContentContainer>{steps[current].content}</ContentContainer>
-        <ActionsContainer>
-          {current > 0 && (
-            <Button
-              style={{
-                margin: "0 8px",
-              }}
-              onClick={() => prev()}
-            >
-              Previous
-            </Button>
-          )}
-          {current < steps.length - 1 && (
-            <Button
-              type="primary"
-              onClick={() => next()}
-              disabled={checkDisabled()}
-            >
-              Next
-            </Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button type="primary" onClick={complete}>
-              Done
-            </Button>
-          )}
-        </ActionsContainer>
-      </Wrapper>
+      {isShow ? (
+        <>
+          <Steps current={current} items={items} />
+          <Wrapper>
+            <ContentContainer>{steps[current].content}</ContentContainer>
+            <ActionsContainer>
+              {current > 0 && (
+                <Button
+                  style={{
+                    margin: "0 8px",
+                  }}
+                  onClick={() => prev()}
+                >
+                  Previous
+                </Button>
+              )}
+              {current < steps.length - 1 && (
+                <Button
+                  type="primary"
+                  onClick={() => next()}
+                  disabled={checkDisabled()}
+                >
+                  Next
+                </Button>
+              )}
+              {current === steps.length - 1 && (
+                <Button type="primary" onClick={complete}>
+                  Done
+                </Button>
+              )}
+            </ActionsContainer>
+          </Wrapper>
+        </>
+      ) : (
+        <Wrapper>
+          <Typography.Title level={4}>
+            You already added max count of groups for your plan
+          </Typography.Title>
+        </Wrapper>
+      )}
     </Container>
   );
 };

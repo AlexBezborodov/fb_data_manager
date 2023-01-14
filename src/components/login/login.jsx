@@ -88,8 +88,13 @@ export const Login = () => {
         ipd: tempPasword,
         userPlan: "free",
         scrappedData: "",
-        sentMessages: 0,
-        expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
+        planInfo: {
+          registerData: moment(),
+          userPlan: "free",
+          scrapCounter: 0,
+          expiredData: moment().add(1, "M"),
+          sentMessages: 0,
+        },
       },
     };
     await axios

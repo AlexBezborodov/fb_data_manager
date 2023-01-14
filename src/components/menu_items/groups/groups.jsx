@@ -25,6 +25,16 @@ export const Groups = () => {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
+      title: "Link to fb group",
+      dataIndex: "fbLink",
+      Width: 150,
+      render: (text) => (
+        <a href={text} target="_blank" rel="noreferrer">
+          {text}
+        </a>
+      ),
+    },
+    {
       title: "Spreadsheet link",
       dataIndex: "slink",
       Width: 150,
@@ -74,11 +84,13 @@ export const Groups = () => {
   };
 
   function transformData(listsData) {
+    console.log("listsData", listsData);
     if (listsData) {
       setTableData(
         listsData.map((item, i) => ({
           key: item.id,
           name: item.groupName,
+          fbLink: item.groupLink,
           slink: item.spreadsheetLink,
           isSend: false,
         }))
@@ -94,6 +106,7 @@ export const Groups = () => {
     setEditData({
       name: currentUser?.fbGroups[index].groupName,
       link: currentUser?.fbGroups[index].spreadsheetLink,
+      fbLink: currentUser?.fbGroups[index].groupLink,
       id,
     });
   };
@@ -104,6 +117,7 @@ export const Groups = () => {
 
     currentUser.fbGroups[index].groupName = editData?.name;
     currentUser.fbGroups[index].spreadsheetLink = editData?.link;
+    currentUser.fbGroups[index].spreadsheetLink = editData?.fbLink;
     axios
       .patch(
         `${BASIC_DB_URL}/users/user${userId}.json`,
@@ -204,6 +218,16 @@ export const Groups = () => {
             onChange={inputHandler}
           />
         </Box>
+        <Typography.Text>Edit fb group link</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="fblink"
+            placeholder="fb group link"
+            size="large"
+            value={editData?.fbLink || ""}
+            onChange={inputHandler}
+          />
+        </Box>
         <Typography.Text>Edit spreadsheet link</Typography.Text>
         <Box m="10px auto">
           <Input
@@ -218,7 +242,7 @@ export const Groups = () => {
           <Button
             type="primary"
             onClick={updateItem}
-            disabled={!editData?.name || !editData?.link}
+            disabled={!editData?.name || !editData?.link || !editData?.fbLink}
           >
             Update Group
           </Button>

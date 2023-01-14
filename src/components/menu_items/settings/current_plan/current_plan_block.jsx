@@ -14,8 +14,7 @@ import { ContentContainer, ActionsContainer } from "../styles";
 export const CurrentPlanBlock = () => {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
   const userId = localStorage.getItem("userId");
-
-  const updateEmail = () => {};
+  console.log("currentUser", currentUser);
 
   useEffect(() => {}, [currentUser]);
 
@@ -46,7 +45,7 @@ export const CurrentPlanBlock = () => {
           <List.Item>
             <List.Item.Meta title="Expires date" />
             <div>
-              {moment(currentUser?.renewalDate).format("DD/MM/YYYY HH:mm") ||
+              {moment(currentUser?.expiredData).format("DD/MM/YYYY HH:mm") ||
                 "-"}
             </div>
           </List.Item>

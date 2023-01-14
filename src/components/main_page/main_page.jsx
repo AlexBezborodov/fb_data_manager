@@ -12,7 +12,7 @@ import {
   SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button } from "antd";
+import { Layout, Menu, Button, message } from "antd";
 import axios from "axios";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -26,18 +26,46 @@ export const MainPage = () => {
   const { setCurrentUser } = useContext(CurrentUserContext);
 
   const [collapsed, setCollapsed] = useState(false);
-
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
 
-  const fetchUserData = (userId) => {
-    axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
+  const fetchUserData = async (userId) => {
+    await axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
       if (res.status === 200) {
         setCurrentUser(res.data);
+        getCurrentPlan(res.data.planInfo);
       }
     });
+  };
+
+  const getCurrentPlan = (currentPlan) => {
+    axios
+      .get(`${BASIC_DB_URL}/plans/${currentPlan.userPlan}.json`)
+      .then((res) => {
+        if (res.data) {
+          localStorage.setItem("currentPlan", JSON.stringify(res.data));
+          checkUserPlan(res.data, currentPlan);
+        }
+      })
+      .catch((err) => {});
+  };
+
+  const checkUserPlan = (plan, userPlan) => {
+    if (new Date(userPlan.expiredData).getTime() < new Date().getTime()) {
+      message.error("Your current plan has expired. Please update your plan");
+      //   setTimeout(() => {
+      //     navigate("/upgrade-plan");
+      //   }, 1500);
+    } else {
+      if (userPlan.scrapCounter >= plan.usersAmount) {
+        message.error("You have reached the limit of saved users");
+      }
+      if (userPlan.sentMessages >= plan.wMessages) {
+        message.error("You have reached the limit of welcome messages");
+      }
+    }
   };
 
   useEffect(() => {

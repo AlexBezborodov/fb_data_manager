@@ -45,12 +45,12 @@ export const SignUp = () => {
         scrappedData: "",
         sentMessages: 0,
         planInfo: {
+          registerData: moment(),
           userPlan: "free",
           scrapCounter: 0,
-          expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
+          expiredData: moment().add(1, "M"),
           sentMessages: 0,
         },
-        expiresData: moment().add(1, "M").format("DD/MM/YYYY"),
       },
     };
 
