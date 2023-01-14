@@ -94,6 +94,7 @@ export const Login = () => {
           scrapCounter: 0,
           expiredData: moment().add(1, "M"),
           sentMessages: 0,
+          updatedData: moment(),
         },
       },
     };

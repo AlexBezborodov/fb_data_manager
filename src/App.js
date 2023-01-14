@@ -16,6 +16,7 @@ import {
 import { SignUp } from "./components/sign_up";
 import { StartPage } from "./components/start_page";
 import "./App.css";
+import { UpdatePlan } from "./components/update_plan";
 import { CurrentUserProvider } from "./providers/current_user";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
               <Route path="groups" element={<Groups />} />
               <Route path="settings" element={<Settings />} />
             </Route>
+            <Route path="/update-plan" element={<UpdatePlan />} />
           </Routes>
         </Router>
       </CurrentUserProvider>

@@ -84,7 +84,6 @@ export const Groups = () => {
   };
 
   function transformData(listsData) {
-    console.log("listsData", listsData);
     if (listsData) {
       setTableData(
         listsData.map((item, i) => ({

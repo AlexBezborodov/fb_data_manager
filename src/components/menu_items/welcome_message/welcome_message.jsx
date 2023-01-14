@@ -72,7 +72,6 @@ export const WelcomeMessage = () => {
         CONFIG
       )
       .then((res) => {
-        console.log("res", res);
         if (res.status === 200) {
           setCurrentUser(res.data);
           message.success("Message succefully updated!");
@@ -93,7 +92,6 @@ export const WelcomeMessage = () => {
       const msg = currentUser?.fbGroups?.filter(
         (group) => group.groupId === activeGroup
       );
-      console.log("msg", msg);
       setdata((prev) => ({ ...prev, wMessage: msg[0].welcomeMessage }));
     }
   };

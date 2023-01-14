@@ -14,3 +14,8 @@
 .ant-table-body {
   min-height: 500px;
 }
+
+:where(.css-dev-only-do-not-override-9ntgx0).ant-list .ant-list-item {
+  padding: 0;
+  margin: 0;
+}

@@ -55,9 +55,9 @@ export const MainPage = () => {
   const checkUserPlan = (plan, userPlan) => {
     if (new Date(userPlan.expiredData).getTime() < new Date().getTime()) {
       message.error("Your current plan has expired. Please update your plan");
-      //   setTimeout(() => {
-      //     navigate("/upgrade-plan");
-      //   }, 1500);
+      setTimeout(() => {
+        navigate("/update-plan");
+      }, 1500);
     } else {
       if (userPlan.scrapCounter >= plan.usersAmount) {
         message.error("You have reached the limit of saved users");

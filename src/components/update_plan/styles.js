@@ -1,16 +1,21 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  margin: 0.5rem auto;
+  padding: 1rem;
+  margin: 2rem auto;
   border-radius: 1rem;
   border: 1px solid grey;
+  display: flex;
+  justify-content: center,
+  align-items: center,
 `;
 export const ContentContainer = styled.div`
   background: lightgrey;
   border-radius: 1rem;
-  margin: 0.5rem;
-  max-width: 600px;
+  margin: 1rem auto;
+  max-width: 1000px;
   min-width: 250px;
+  min-height: 300px;
 `;
 
 export const ActionsContainer = styled.div`

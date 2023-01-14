@@ -50,6 +50,7 @@ export const SignUp = () => {
           scrapCounter: 0,
           expiredData: moment().add(1, "M"),
           sentMessages: 0,
+          updatedData: moment(),
         },
       },
     };
