@@ -101,7 +101,7 @@ export const UpdatePlan = ({ setModal = () => {} }) => {
           onClick={updatePlan}
           disabled={!choise}
         >
-          Buy
+          {choise.name === "free" ? "Get free" : "Buy"}
         </Button>
       </ActionsContainer>
     </ContentContainer>
