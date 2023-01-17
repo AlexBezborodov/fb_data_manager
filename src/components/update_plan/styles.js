@@ -21,8 +21,9 @@ export const ContentContainer = styled.div`
 export const ActionsContainer = styled.div`
   margin: 0 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   padding: 1rem;
+  min-height: 150px;
 `;
 export const Wrapper = styled.div`
   margin: 0 auto;

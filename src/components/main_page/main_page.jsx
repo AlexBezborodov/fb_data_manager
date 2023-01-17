@@ -42,7 +42,7 @@ export const MainPage = () => {
 
   const getCurrentPlan = (currentPlan) => {
     axios
-      .get(`${BASIC_DB_URL}/plans/${currentPlan.userPlan}.json`)
+      .get(`${BASIC_DB_URL}/plans/${currentPlan.userPlan.toLowerCase()}.json`)
       .then((res) => {
         if (res.data) {
           localStorage.setItem("currentPlan", JSON.stringify(res.data));

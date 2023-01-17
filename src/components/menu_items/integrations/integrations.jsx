@@ -99,7 +99,7 @@ export const Integrations = () => {
   useEffect(() => {
     const groupsLimit = JSON.parse(
       localStorage.getItem("currentPlan")
-    ).groupsAmount;
+    )?.groupsAmount;
     if (groupsLimit && currentUser?.fbGroups?.length >= groupsLimit) {
       setIsShow(false);
     }

@@ -56,3 +56,10 @@ export const GROUPS = [
     label: "All groups",
   },
 ];
+
+export const INITIAL_OPTIONS = {
+  "client-id":
+    "AQCMuwyYy33o3m7Hy4DJefUvFkvLrRmggvgh8K6TXSOFk2kVp4-2yd8xDyoJnJreNSHtufFv7PuFLGKk",
+  components: "buttons",
+  currency: "USD",
+};

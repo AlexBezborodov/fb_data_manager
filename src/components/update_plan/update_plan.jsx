@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Button, Typography, message } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -7,7 +8,8 @@ import PropTypes from "prop-types";
 
 import { Box } from "../../global_styles/global_styles";
 import { CurrentUserContext } from "../../providers/current_user";
-import { BASIC_DB_URL, CONFIG } from "../../variables";
+import { BASIC_DB_URL, CONFIG, INITIAL_OPTIONS } from "../../variables";
+import { PayPalButtonsWrapper } from "../paypal_buttons";
 import { PlanCardInfo } from "./card";
 import { ContentContainer, ActionsContainer } from "./styles";
 
@@ -60,6 +62,19 @@ export const UpdatePlan = ({ setModal = () => {} }) => {
       });
   };
 
+  const successPayment = (payment) => {
+    console.log("payment", payment);
+    const prevPaymets = currentUser?.paymentHistory || [];
+    const lastPayment = {
+      update_time: payment.update_time,
+      purchase_units: payment.purchase_units[0].amount,
+      id: payment.id,
+      name: `${payment.payer.name.given_name} ${payment.payer.name.surname}`,
+    };
+    currentUser.paymentHistory = [...prevPaymets, lastPayment];
+    updatePlan();
+  };
+
   useEffect(() => {
     fetchPlans();
   }, []);
@@ -94,15 +109,27 @@ export const UpdatePlan = ({ setModal = () => {} }) => {
       </Box>
 
       <ActionsContainer>
-        <Button
-          type="primary"
-          size="large"
-          style={{ width: 150 }}
-          onClick={updatePlan}
-          disabled={!choise}
-        >
-          {choise.name === "free" ? "Get free" : "Buy"}
-        </Button>
+        {choise.name === "free" ? (
+          <Button
+            type="primary"
+            size="large"
+            style={{ width: 450 }}
+            onClick={updatePlan}
+            disabled={!choise}
+          >
+            "Get free"
+          </Button>
+        ) : (
+          <PayPalScriptProvider options={INITIAL_OPTIONS}>
+            <PayPalButtonsWrapper
+              currency={INITIAL_OPTIONS.currency}
+              showSpinner={false}
+              price={choise.price}
+              style={{ layout: "horizontal" }}
+              successPayment={successPayment}
+            />
+          </PayPalScriptProvider>
+        )}
       </ActionsContainer>
     </ContentContainer>
   );
