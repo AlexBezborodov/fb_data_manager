@@ -27,12 +27,15 @@ export const CustomTags = ({ incomeTags = [], updateTags }) => {
     setInputVisible(true);
   };
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    setInputValue(e.target.value.toUpperCase());
   };
   const handleInputConfirm = () => {
     if (inputValue && tags.indexOf(inputValue) === -1) {
-      setTags([...tags, inputValue]);
-      updateTags((prev) => ({ ...prev, tags: [...tags, inputValue] }));
+      setTags([...tags, inputValue.toLowerCase()]);
+      updateTags((prev) => ({
+        ...prev,
+        tags: [...tags, inputValue.toLowerCase()],
+      }));
     }
     setInputVisible(false);
     setInputValue("");

@@ -182,6 +182,7 @@ export const Members = () => {
           q3: item?.questions[2]?.question,
           a3: item?.questions[2]?.answer,
           profileLink: item.profileLink,
+          fbUserId: item?.profileId,
           details: item?.basicInfo ? item.basicInfo?.toString() : "",
         }))
       );
@@ -269,7 +270,7 @@ export const Members = () => {
 
   useEffect(() => {
     transformData(filteredByGroup(currentUser?.scrappedData));
-  }, [currentUser?.scrappedData, activeMainFilter, visibleColumns]);
+  }, [currentUser, activeMainFilter, visibleColumns]);
 
   return (
     <>

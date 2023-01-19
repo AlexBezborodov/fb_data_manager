@@ -14,16 +14,18 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, Button, message } from "antd";
 import axios from "axios";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useMatch } from "react-router-dom";
 
 import { CurrentUserContext } from "../../providers/current_user";
-import { BASIC_DB_URL } from "../../variables";
+import { getUniqueList } from "../../utils/utils";
+import { BASIC_DB_URL, CONFIG } from "../../variables";
 const { Sider, Content } = Layout;
 
 export const MainPage = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { setCurrentUser } = useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const isMembers = !!useMatch("/main/members");
 
   const [collapsed, setCollapsed] = useState(false);
   const handleLogout = () => {
@@ -40,6 +42,19 @@ export const MainPage = () => {
     });
   };
 
+  const updateUserData = async (updLists, userId) => {
+    const updatedData = {
+      ...currentUser,
+      lists: updLists,
+    };
+    await axios
+      .patch(`${BASIC_DB_URL}/users/user${userId}.json`, updatedData, CONFIG)
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+        }
+      });
+  };
   const getCurrentPlan = (currentPlan) => {
     axios
       .get(`${BASIC_DB_URL}/plans/${currentPlan.userPlan.toLowerCase()}.json`)
@@ -68,6 +83,46 @@ export const MainPage = () => {
     }
   };
 
+  const autoAddUserTOListByTag = async () => {
+    const newMembers = await currentUser?.scrappedData;
+    const lists = await currentUser?.lists;
+    let updatedLists = null;
+    if (!!newMembers && !!lists) {
+      updatedLists = lists.map((list) => {
+        const currentListTags = list?.tags
+          ? list?.tags?.map((item) => item.toLowerCase())
+          : [];
+        const targetMembers = newMembers?.filter((member) => {
+          const lowerCaseDetails = member?.basicInfo?.map((item) =>
+            item.toLowerCase()
+          );
+          const includesTag = currentListTags?.some((tag) => {
+            if (lowerCaseDetails.toString().includes(tag.toLowerCase())) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          if (includesTag) return member;
+        });
+        if (targetMembers?.length) {
+          list.data = getUniqueList(
+            [...list.data, ...transformData(targetMembers)],
+            "profileLink"
+          );
+          // list.data = [...list.data, ...transformData(targetMembers)];
+          return list;
+        } else {
+          return list;
+        }
+      });
+    } else {
+      updatedLists = lists;
+    }
+
+    updateUserData(updatedLists, currentUser.userId);
+  };
+
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (userId) {
@@ -76,6 +131,14 @@ export const MainPage = () => {
       navigate("/login");
     }
   }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId && isMembers) {
+      fetchUserData(userId);
+      autoAddUserTOListByTag(currentUser);
+    }
+  }, [isMembers]);
 
   return (
     <Layout
@@ -182,3 +245,22 @@ export const MainPage = () => {
     </Layout>
   );
 };
+
+function transformData(userData) {
+  if (userData) {
+    return userData.map((item, i) => ({
+      key: item.id,
+      avatar: item.avatarUrl,
+      name: item.user,
+      q1: item?.questions[0]?.question,
+      a1: item?.questions[0]?.answer,
+      q2: item?.questions[1]?.question,
+      a2: item?.questions[1]?.answer,
+      q3: item?.questions[2]?.question,
+      a3: item?.questions[2]?.answer,
+      profileLink: item.profileLink,
+      fbUserId: item?.profileId,
+      details: item?.basicInfo ? item.basicInfo?.toString() : "",
+    }));
+  }
+}
