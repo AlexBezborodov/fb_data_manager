@@ -219,7 +219,7 @@ export const Members = () => {
           setListModalOpen(false);
           setListName("");
           setSelectedRowKeys([]);
-          message.success("List succefully created!");
+          message.success("List successfully created!");
         } else {
           message.error("Something went wrong. Try again later");
         }

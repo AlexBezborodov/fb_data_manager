@@ -80,7 +80,7 @@ export const Integrations = () => {
       .then((res) => {
         if (res.status === 200) {
           setCurrentUser(res.data);
-          message.success("Integration succefully completed!");
+          message.success("Integration successfully completed!");
           setCurrent(0);
           setdata(null);
         } else {

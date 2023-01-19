@@ -31,8 +31,9 @@ export const EmailBlock = () => {
           `${BASIC_DB_URL}/users.json?orderBy="email"&equalTo="${data?.email}"`
         )
         .then((res) => {
-          if (getUserKey(res.data)) {
-            message.error("Email already exist");
+          const resultId = res.data[getUserKey(res.data)].id;
+          if (resultId !== userId) {
+            message.error("Email already used by another user");
           } else {
             axios
               .patch(
@@ -43,7 +44,7 @@ export const EmailBlock = () => {
               .then((res) => {
                 if (res.status === 200) {
                   setCurrentUser(res.data);
-                  message.success("Email succefully updated!");
+                  message.success("Account details successfully updated!");
                   setIsEdit(false);
                 } else {
                   message.error("Something went wrong. Try again later");

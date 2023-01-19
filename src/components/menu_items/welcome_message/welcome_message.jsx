@@ -74,7 +74,7 @@ export const WelcomeMessage = () => {
       .then((res) => {
         if (res.status === 200) {
           setCurrentUser(res.data);
-          message.success("Message succefully updated!");
+          message.success("Message successfully updated!");
           setdata(null);
         } else {
           message.error("Something went wrong. Try again later");

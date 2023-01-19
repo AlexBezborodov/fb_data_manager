@@ -33,7 +33,7 @@ export const PasswordBlock = () => {
         .then((res) => {
           if (res.status === 200) {
             setCurrentUser(res.data);
-            message.success("Password succefully updated!");
+            message.success("Password successfully updated!");
             setdata(null);
           } else {
             message.error("Something went wrong. Try again later");
