@@ -4,6 +4,7 @@ export const Container = styled.div`
   margin: 0.5rem auto;
   border-radius: 1rem;
   border: 1px solid grey;
+  max-width: 1004px;
 `;
 export const ContentContainer = styled.div`
   background: lightgrey;
@@ -21,8 +22,10 @@ export const ActionsContainer = styled.div`
 `;
 export const Wrapper = styled.div`
   margin: 0 auto;
-  width: 95%;
   overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 `;
 export const StepWrapper = styled.div`
   display: flex;

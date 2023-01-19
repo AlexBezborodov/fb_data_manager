@@ -97,15 +97,17 @@ export const UpdatePlan = ({ setModal = () => {} }) => {
         }}
       >
         {plans &&
-          plans?.map((plan) => (
-            <Box key={plan.name} m="10px">
-              <PlanCardInfo
-                plan={plan}
-                setPlan={setChoise}
-                activeId={choise?.id}
-              />
-            </Box>
-          ))}
+          plans
+            ?.filter((plan) => plan.price > 0)
+            .map((plan) => (
+              <Box key={plan.name} m="10px">
+                <PlanCardInfo
+                  plan={plan}
+                  setPlan={setChoise}
+                  activeId={choise?.id}
+                />
+              </Box>
+            ))}
       </Box>
 
       <ActionsContainer>

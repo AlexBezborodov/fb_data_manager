@@ -103,6 +103,13 @@ export const ColumnsPreferences = ({ columns, setSColumnStatus }) => {
         >
           Details
         </Checkbox>
+        <Checkbox
+          name="actions"
+          checked={columns[10].visible}
+          onChange={(e) => onChange(e, 10)}
+        >
+          Actions
+        </Checkbox>
       </Box>
     </Box>
   );
