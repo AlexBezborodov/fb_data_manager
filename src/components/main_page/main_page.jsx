@@ -26,6 +26,7 @@ export const MainPage = () => {
   const { pathname } = useLocation();
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
   const isMembers = !!useMatch("/main/members");
+  const isLists = !!useMatch("/main/lists");
 
   const [collapsed, setCollapsed] = useState(false);
   const handleLogout = () => {
@@ -38,6 +39,7 @@ export const MainPage = () => {
       if (res.status === 200) {
         setCurrentUser(res.data);
         getCurrentPlan(res.data.planInfo);
+        autoAddUserTOListByTag(res.data);
       }
     });
   };
@@ -134,11 +136,10 @@ export const MainPage = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
-    if (userId && isMembers) {
+    if (userId && (isMembers || isLists)) {
       fetchUserData(userId);
-      autoAddUserTOListByTag(currentUser);
     }
-  }, [isMembers]);
+  }, [isMembers, isLists]);
 
   return (
     <Layout

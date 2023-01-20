@@ -57,6 +57,13 @@ export const ColumnsPreferences = ({ columns, setSColumnStatus }) => {
         >
           Q2
         </Checkbox>
+        <Checkbox
+          name="a2"
+          checked={columns[5].visible}
+          onChange={(e) => onChange(e, 5)}
+        >
+          Answer 2
+        </Checkbox>
       </Box>
       <Box
         m="15px"
@@ -68,13 +75,6 @@ export const ColumnsPreferences = ({ columns, setSColumnStatus }) => {
           width: "30%",
         }}
       >
-        <Checkbox
-          name="a2"
-          checked={columns[5].visible}
-          onChange={(e) => onChange(e, 5)}
-        >
-          Answer 2
-        </Checkbox>
         <Checkbox
           name="q3"
           checked={columns[6].visible}
@@ -104,9 +104,16 @@ export const ColumnsPreferences = ({ columns, setSColumnStatus }) => {
           Details
         </Checkbox>
         <Checkbox
-          name="actions"
+          name="details"
           checked={columns[10].visible}
           onChange={(e) => onChange(e, 10)}
+        >
+          Notes
+        </Checkbox>
+        <Checkbox
+          name="actions"
+          checked={columns[11].visible}
+          onChange={(e) => onChange(e, 11)}
         >
           Actions
         </Checkbox>

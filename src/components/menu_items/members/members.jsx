@@ -16,6 +16,8 @@ import { BASIC_DB_URL, CONFIG, FILTERS, GROUPS } from "../../../variables";
 import { BasicModal, BasicSearch, BasicSelect } from "../../basic_components";
 import { CustomTable } from "../../basic_components/table";
 import { ColumnsPreferences } from "./columns_preferences/columns_preferences";
+import { EditMemberModal } from "./edit_member_modal/edit_member_modal";
+import { EditNoteModal } from "./edit_note_modal";
 import { Container, Wrapper, ContentContainer } from "./styles";
 
 export const Members = () => {
@@ -39,42 +41,42 @@ export const Members = () => {
       dataIndex: "q1",
       sorter: (a, b) => a.q1.localeCompare(b.q1),
       visible: true,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Answer1",
       dataIndex: "a1",
       sorter: (a, b) => a.a1.localeCompare(b.a1),
       visible: true,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Q2",
       dataIndex: "q2",
       sorter: (a, b) => a.q2.localeCompare(b.q2),
       visible: true,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Answer2",
       dataIndex: "a2",
       sorter: (a, b) => a.a2.localeCompare(b.a2),
       visible: true,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Q3",
       dataIndex: "q3",
       sorter: (a, b) => a.q3.localeCompare(b.q3),
       visible: false,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Answer3",
       dataIndex: "a3",
       sorter: (a, b) => a.a3.localeCompare(b.a3),
       visible: false,
-      Width: 150,
+      Width: 200,
     },
     {
       title: "Profile Link",
@@ -92,7 +94,7 @@ export const Members = () => {
       dataIndex: "details",
       sorter: (a, b) => a.details.localeCompare(b.details),
       visible: true,
-      width: 400,
+      width: 300,
     },
     {
       title: "Notes",
@@ -124,6 +126,7 @@ export const Members = () => {
       title: "Actions",
       dataIndex: "actions",
       visible: true,
+      width: 180,
       render: (index, item) => (
         <Box style={{ display: "flex", justifyContent: "center" }}>
           <Box m="0 5px">
@@ -327,33 +330,6 @@ export const Members = () => {
     });
   };
 
-  const updateMember = () => {
-    const index = currentUser?.scrappedData.findIndex(
-      (item) => item.id === editData.id
-    );
-
-    currentUser.scrappedData[index].avatarUrl = editData?.avatarUrl;
-    currentUser.scrappedData[index].user = editData?.user;
-    currentUser.scrappedData[index].profileLink = editData?.profileLink;
-    currentUser.scrappedData[index].basicInfo = editData?.basicInfo;
-    axios
-      .patch(
-        `${BASIC_DB_URL}/users/user${userId}.json`,
-        { ...currentUser },
-        CONFIG
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          setCurrentUser(res.data);
-          message.success("Member updated!");
-          setEditModalOpen(false);
-          setEditData(null);
-        } else {
-          message.error("Something went wrong. Try again later");
-        }
-      });
-  };
-
   const refresh = () => {
     axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
       if (res.status === 200) {
@@ -375,57 +351,15 @@ export const Members = () => {
     }
   };
 
-  const saveNote = () => {
-    const index = currentUser?.scrappedData.findIndex(
-      (item) => item.id === currentNote.currentItemId
-    );
-    currentUser.scrappedData[index].note = currentNote.newNote;
-    const updatedData = currentUser;
-    axios
-      .patch(
-        `${BASIC_DB_URL}/users/user${userId}.json`,
-        { ...updatedData },
-        CONFIG
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          setCurrentUser(res.data);
-          setNoteModalOpen(false);
-          setCurrentNote({ newNote: "", currentItemId: null });
-          message.success("Name changed successfully");
-        } else {
-          message.error("Something went wrong. Try again later");
-        }
-      });
-  };
-
-  const removeNote = () => {
-    const index = currentUser?.scrappedData.findIndex(
-      (item) => item.id === currentNote.currentItemId
-    );
-    currentUser.scrappedData[index].note = "";
-    const updatedData = currentUser;
-    axios
-      .patch(
-        `${BASIC_DB_URL}/users/user${userId}.json`,
-        { ...updatedData },
-        CONFIG
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          setCurrentUser(res.data);
-          setNoteModalOpen(false);
-          setCurrentNote({ newNote: "", currentItemId: null });
-          message.success("Name changed successfully");
-        } else {
-          message.error("Something went wrong. Try again later");
-        }
-      });
-  };
-
   useEffect(() => {
     transformData(filteredByGroup(currentUser?.scrappedData));
   }, [currentUser, activeMainFilter, visibleColumns]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      refresh();
+    }, 500);
+  }, []);
 
   return (
     <>
@@ -516,118 +450,20 @@ export const Members = () => {
         </Box>
       </BasicModal>
 
-      <BasicModal
-        title="Edit Member"
-        open={editModalOpen}
-        closeModal={setEditModalOpen}
-      >
-        <Typography.Text>Edit member Avatar link</Typography.Text>
-        <Box m="10px auto">
-          <Input
-            name="avatarUrl"
-            placeholder="Avatar link"
-            size="large"
-            value={editData?.avatarUrl || ""}
-            onChange={inputHandler}
-          />
-        </Box>
-        <Typography.Text>Edit member full name</Typography.Text>
-        <Box m="10px auto">
-          <Input
-            name="user"
-            placeholder="Full name"
-            size="large"
-            value={editData?.user || ""}
-            onChange={inputHandler}
-          />
-        </Box>
-        <Typography.Text>Edit spreadsheet link</Typography.Text>
-        <Box m="10px auto">
-          <Input
-            name="profileLink"
-            placeholder="Profile link"
-            size="large"
-            value={editData?.profileLink || ""}
-            onChange={inputHandler}
-          />
-        </Box>
-        <Typography.Text>Edit Details</Typography.Text>
-        <Box m="5px auto">
-          <Input
-            placeholder="details"
-            size="large"
-            value={editData?.basicInfo[0] || ""}
-            onChange={(e) => inputHandler(e, 0)}
-          />
-        </Box>
-        <Box m="5px auto">
-          <Input
-            placeholder="Details"
-            size="large"
-            value={editData?.basicInfo[1] || ""}
-            onChange={(e) => inputHandler(e, 1)}
-          />
-        </Box>
-        <Box m="5px auto">
-          <Input
-            placeholder="Details"
-            size="large"
-            value={editData?.basicInfo[2] || ""}
-            onChange={(e) => inputHandler(e, 2)}
-          />
-        </Box>
-        <Box m="5px auto">
-          <Input
-            placeholder="Details"
-            size="large"
-            value={editData?.basicInfo[3] || ""}
-            onChange={(e) => inputHandler(e, 3)}
-          />
-        </Box>
-        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button type="primary" onClick={updateMember}>
-            Update
-          </Button>
-        </Box>
-      </BasicModal>
+      <EditMemberModal
+        editModalOpen={editModalOpen}
+        setEditModalOpen={setEditModalOpen}
+        editData={editData}
+        setEditData={setEditData}
+        inputHandler={inputHandler}
+      />
 
-      <BasicModal
-        open={noteModalOpen}
-        closeModal={setNoteModalOpen}
-        title="Edit Note"
-      >
-        <Box m="10px auto">
-          <Input.TextArea
-            rows={4}
-            name="newNote"
-            placeholder="Note"
-            size="large"
-            value={currentNote.newNote || ""}
-            onChange={(e) =>
-              setCurrentNote((prev) => ({
-                ...prev,
-                newNote: e.target.value,
-              }))
-            }
-          />
-        </Box>
-        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
-          {currentNote?.newNote && (
-            <Box m="0 10px">
-              <Button type="primary" onClick={removeNote} danger>
-                Remove Note
-              </Button>
-            </Box>
-          )}
-          <Button
-            type="primary"
-            onClick={saveNote}
-            disabled={!currentNote.newNote}
-          >
-            Save Note
-          </Button>
-        </Box>
-      </BasicModal>
+      <EditNoteModal
+        noteModalOpen={noteModalOpen}
+        setNoteModalOpen={setNoteModalOpen}
+        currentNote={currentNote}
+        setCurrentNote={setCurrentNote}
+      />
     </>
   );
 };
