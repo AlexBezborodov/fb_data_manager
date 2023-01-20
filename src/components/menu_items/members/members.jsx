@@ -4,6 +4,7 @@ import {
   SettingOutlined,
   DeleteOutlined,
   ReloadOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import { Button, message, Typography, Input, Avatar } from "antd";
 import axios from "axios";
@@ -94,11 +95,46 @@ export const Members = () => {
       width: 400,
     },
     {
+      title: "Notes",
+      dataIndex: "notes",
+      visible: true,
+      width: 200,
+      render: (index, item) => (
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>{item.note}</Box>
+          <Box m="0 10px">
+            <Button
+              type="ghost"
+              shape="circle"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => editMemberNote(item.key)}
+            />
+          </Box>
+        </Box>
+      ),
+    },
+    {
       title: "Actions",
       dataIndex: "actions",
       visible: true,
       render: (index, item) => (
         <Box style={{ display: "flex", justifyContent: "center" }}>
+          <Box m="0 5px">
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => editMember(item.key)}
+            />
+          </Box>
           <Button
             type="primary"
             shape="circle"
@@ -126,6 +162,15 @@ export const Members = () => {
 
   const [visibleColumns, setVisibleColumns] = useState(columns);
   const [listName, setListName] = useState("");
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState();
+
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [currentNote, setCurrentNote] = useState({
+    newNote: "",
+    currentItemId: null,
+  });
 
   const userId = localStorage.getItem("userId");
 
@@ -155,17 +200,38 @@ export const Members = () => {
     styles: { width: "100%" },
   };
 
-  const listsOptions = modifyGroups().filter((item) => item.value !== "all");
-  const listSelectProps = {
-    size: "large",
-    options: listsOptions,
-    setValue: setActiveGroup,
-    styles: { width: "100%" },
-    defaultValue:
-      activeMainFilter !== "all"
-        ? modifyGroups().filter((item) => item.value !== "activeMainFilter")[0]
-            ?.value
-        : listsOptions[0]?.value,
+  //const listsOptions = modifyGroups().filter((item) => item.value !== "all");
+  // const listSelectProps = {
+  //   size: "large",
+  //   options: listsOptions,
+  //   setValue: setActiveGroup,
+  //   styles: { width: "100%" },
+  //   defaultValue:
+  //     activeMainFilter !== "all"
+  //       ? modifyGroups().filter((item) => item.value !== "activeMainFilter")[0]
+  //           ?.value
+  //       : listsOptions[0]?.value,
+  // };
+
+  const inputHandler = (e, index) => {
+    if (index) {
+      const updBasicInfo = editData.basicInfo;
+      updBasicInfo[index] = e.target.value;
+      setEditData((prev) => ({ ...prev, basicInfo: updBasicInfo }));
+    } else {
+      setEditData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    }
+  };
+
+  const editMemberNote = (id) => {
+    setNoteModalOpen(true);
+    const currentItem = currentUser?.scrappedData.filter(
+      (item) => item.id === id
+    );
+    setCurrentNote({
+      currentItemId: id,
+      newNote: currentItem[0]?.note || "",
+    });
   };
 
   function transformData(userData) {
@@ -184,6 +250,7 @@ export const Members = () => {
           profileLink: item.profileLink,
           fbUserId: item?.profileId,
           details: item?.basicInfo ? item.basicInfo?.toString() : "",
+          note: item?.note || "",
         }))
       );
     } else {
@@ -247,6 +314,46 @@ export const Members = () => {
       });
   };
 
+  const editMember = (id) => {
+    const index = currentUser?.scrappedData.findIndex((item) => item.id === id);
+    setEditModalOpen(true);
+    const editableUser = currentUser?.scrappedData[index];
+    setEditData({
+      avatarUrl: editableUser.avatarUrl,
+      user: editableUser.user,
+      profileLink: editableUser.profileLink,
+      basicInfo: editableUser.basicInfo,
+      id,
+    });
+  };
+
+  const updateMember = () => {
+    const index = currentUser?.scrappedData.findIndex(
+      (item) => item.id === editData.id
+    );
+
+    currentUser.scrappedData[index].avatarUrl = editData?.avatarUrl;
+    currentUser.scrappedData[index].user = editData?.user;
+    currentUser.scrappedData[index].profileLink = editData?.profileLink;
+    currentUser.scrappedData[index].basicInfo = editData?.basicInfo;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...currentUser },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          message.success("Member updated!");
+          setEditModalOpen(false);
+          setEditData(null);
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
+
   const refresh = () => {
     axios.get(`${BASIC_DB_URL}/users/user${userId}.json`).then((res) => {
       if (res.status === 200) {
@@ -266,6 +373,54 @@ export const Members = () => {
       setSelectedRowKeys([]);
       return items.filter((item) => item.groupId === activeMainFilter);
     }
+  };
+
+  const saveNote = () => {
+    const index = currentUser?.scrappedData.findIndex(
+      (item) => item.id === currentNote.currentItemId
+    );
+    currentUser.scrappedData[index].note = currentNote.newNote;
+    const updatedData = currentUser;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...updatedData },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          setNoteModalOpen(false);
+          setCurrentNote({ newNote: "", currentItemId: null });
+          message.success("Name changed successfully");
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
+  };
+
+  const removeNote = () => {
+    const index = currentUser?.scrappedData.findIndex(
+      (item) => item.id === currentNote.currentItemId
+    );
+    currentUser.scrappedData[index].note = "";
+    const updatedData = currentUser;
+    axios
+      .patch(
+        `${BASIC_DB_URL}/users/user${userId}.json`,
+        { ...updatedData },
+        CONFIG
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          setCurrentUser(res.data);
+          setNoteModalOpen(false);
+          setCurrentNote({ newNote: "", currentItemId: null });
+          message.success("Name changed successfully");
+        } else {
+          message.error("Something went wrong. Try again later");
+        }
+      });
   };
 
   useEffect(() => {
@@ -351,12 +506,125 @@ export const Members = () => {
           />
         </Box>
         {/* <Typography.Text>Choose group</Typography.Text> */}
-        <Box m="15px 0" style={{ display: "none" }}>
+        {/* <Box m="15px 0" style={{ display: "none" }}>
           <BasicSelect {...listSelectProps} />
-        </Box>
+        </Box> */}
         <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button type="primary" onClick={saveList} disabled={!listName.length}>
             Save list
+          </Button>
+        </Box>
+      </BasicModal>
+
+      <BasicModal
+        title="Edit Member"
+        open={editModalOpen}
+        closeModal={setEditModalOpen}
+      >
+        <Typography.Text>Edit member Avatar link</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="avatarUrl"
+            placeholder="Avatar link"
+            size="large"
+            value={editData?.avatarUrl || ""}
+            onChange={inputHandler}
+          />
+        </Box>
+        <Typography.Text>Edit member full name</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="user"
+            placeholder="Full name"
+            size="large"
+            value={editData?.user || ""}
+            onChange={inputHandler}
+          />
+        </Box>
+        <Typography.Text>Edit spreadsheet link</Typography.Text>
+        <Box m="10px auto">
+          <Input
+            name="profileLink"
+            placeholder="Profile link"
+            size="large"
+            value={editData?.profileLink || ""}
+            onChange={inputHandler}
+          />
+        </Box>
+        <Typography.Text>Edit Details</Typography.Text>
+        <Box m="5px auto">
+          <Input
+            placeholder="details"
+            size="large"
+            value={editData?.basicInfo[0] || ""}
+            onChange={(e) => inputHandler(e, 0)}
+          />
+        </Box>
+        <Box m="5px auto">
+          <Input
+            placeholder="Details"
+            size="large"
+            value={editData?.basicInfo[1] || ""}
+            onChange={(e) => inputHandler(e, 1)}
+          />
+        </Box>
+        <Box m="5px auto">
+          <Input
+            placeholder="Details"
+            size="large"
+            value={editData?.basicInfo[2] || ""}
+            onChange={(e) => inputHandler(e, 2)}
+          />
+        </Box>
+        <Box m="5px auto">
+          <Input
+            placeholder="Details"
+            size="large"
+            value={editData?.basicInfo[3] || ""}
+            onChange={(e) => inputHandler(e, 3)}
+          />
+        </Box>
+        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button type="primary" onClick={updateMember}>
+            Update
+          </Button>
+        </Box>
+      </BasicModal>
+
+      <BasicModal
+        open={noteModalOpen}
+        closeModal={setNoteModalOpen}
+        title="Edit Note"
+      >
+        <Box m="10px auto">
+          <Input.TextArea
+            rows={4}
+            name="newNote"
+            placeholder="Note"
+            size="large"
+            value={currentNote.newNote || ""}
+            onChange={(e) =>
+              setCurrentNote((prev) => ({
+                ...prev,
+                newNote: e.target.value,
+              }))
+            }
+          />
+        </Box>
+        <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+          {currentNote?.newNote && (
+            <Box m="0 10px">
+              <Button type="primary" onClick={removeNote} danger>
+                Remove Note
+              </Button>
+            </Box>
+          )}
+          <Button
+            type="primary"
+            onClick={saveNote}
+            disabled={!currentNote.newNote}
+          >
+            Save Note
           </Button>
         </Box>
       </BasicModal>
