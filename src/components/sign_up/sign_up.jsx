@@ -6,11 +6,13 @@ import moment from "moment";
 import { useNavigate } from "react-router";
 
 import { Box } from "../../global_styles/global_styles";
+import { useSendEmail } from "../../hooks/use_send_email";
 import { getUserKey } from "../../utils/utils";
 import { BASIC_DB_URL, MAIL_REGEXP } from "../../variables";
 import { LoginWrapper, Header, LoginArea, Content } from "../login/style";
 
 export const SignUp = () => {
+  const [post] = useSendEmail();
   const navigate = useNavigate();
 
   const [signUpData, setSignUpData] = useState({});
@@ -27,7 +29,12 @@ export const SignUp = () => {
 
   const handleSignUp = () => {
     const id = Math.floor(Math.random() * 1000000);
-
+    const emailData = {
+      id,
+      email: signUpData?.email,
+      name: signUpData?.userName,
+      tempPasword: signUpData?.password,
+    };
     const config = {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
@@ -71,6 +78,10 @@ export const SignUp = () => {
                 if (res.status === 200) {
                   const key = getUserKey(res.data);
                   setErrors(null);
+                  post(
+                    emailData,
+                    `Your login: ${emailData.email}, password: ${emailData.tempPasword}`
+                  );
                   localStorage.setItem("currentUser", res.data[key].email);
                   localStorage.setItem("userId", res.data[key].id);
                   navigate("/main");
@@ -148,7 +159,7 @@ export const SignUp = () => {
                 size="large"
                 block
               >
-                Login
+                Register
               </Button>
             </Box>
             <Box width="180px" m="10px auto" style={{ textAlign: "center" }}>

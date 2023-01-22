@@ -9,11 +9,13 @@ import { GoogleLogin } from "react-google-login";
 import { useNavigate } from "react-router";
 
 import { Box } from "../../global_styles/global_styles";
+import { useSendEmail } from "../../hooks/use_send_email";
 import { getUserKey } from "../../utils/utils";
 import { BASIC_DB_URL, CLIENTID, MAIL_REGEXP, CONFIG } from "../../variables";
 import { LoginWrapper, Header, LoginArea, Content } from "./style";
 
 export const Login = () => {
+  const [post] = useSendEmail();
   const navigate = useNavigate();
   const [loginData, setLogindata] = useState();
   const [fbUser, setFbUser] = useState();
@@ -79,7 +81,12 @@ export const Login = () => {
 
   const oauthLogin = async (respData) => {
     const { id, email, name } = respData;
-
+    const emailData = {
+      id,
+      email,
+      name,
+      tempPasword,
+    };
     const newUser = {
       [`user${id}`]: {
         id,
@@ -119,6 +126,7 @@ export const Login = () => {
                   id: res.data[key].id,
                 });
                 showModal();
+                post(emailData);
               } else {
                 setErrors("Can`t login with google.Try again later");
               }

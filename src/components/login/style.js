@@ -41,5 +41,5 @@ export const Content = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 60px);
 `;
