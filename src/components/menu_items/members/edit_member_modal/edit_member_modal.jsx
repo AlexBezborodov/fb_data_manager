@@ -105,7 +105,7 @@ export const EditMemberModal = ({
 EditMemberModal.propTypes = {
   editModalOpen: PropTypes.bool,
   setEditModalOpen: PropTypes.func.isRequired,
-  editData: PropTypes.func.isRequired,
-  setEditData: PropTypes.object,
+  editData: PropTypes.object,
+  setEditData: PropTypes.func.isRequired,
   inputHandler: PropTypes.func.isRequired,
 };
