@@ -37,3 +37,16 @@ export const useSendEmail = () => {
   }, []);
   return [post];
 };
+
+export const useSendEmailByUser = () => {
+  const sendEmail = useCallback((regData) => {
+    axios
+      .post(`https://api.emailjs.com/api/v1.0/email/send`, regData)
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(`message sent`);
+        }
+      });
+  }, []);
+  return [sendEmail];
+};
