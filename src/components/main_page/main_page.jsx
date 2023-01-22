@@ -25,7 +25,6 @@ export const MainPage = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
-  const isMembers = !!useMatch("/main/members");
   const isLists = !!useMatch("/main/lists");
 
   const [collapsed, setCollapsed] = useState(false);
@@ -114,7 +113,6 @@ export const MainPage = () => {
             [...list.data, ...transformData(targetMembers)],
             "profileLink"
           );
-          // list.data = [...list.data, ...transformData(targetMembers)];
           return list;
         } else {
           return list;
@@ -138,10 +136,10 @@ export const MainPage = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
-    if (userId && (isMembers || isLists)) {
+    if (userId && isLists) {
       fetchUserData(userId);
     }
-  }, [isMembers, isLists]);
+  }, [isLists]);
 
   return (
     <Layout
@@ -149,6 +147,7 @@ export const MainPage = () => {
         width: "100%",
         height: "100%",
         minHeight: "100vh",
+        marginRight: 0,
       }}
     >
       <Sider
@@ -237,11 +236,7 @@ export const MainPage = () => {
         </div>
       </Sider>
       <Layout className="site-layout">
-        <Content
-          style={{
-            padding: 10,
-          }}
-        >
+        <Content>
           <Outlet />
         </Content>
       </Layout>

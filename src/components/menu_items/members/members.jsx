@@ -355,13 +355,6 @@ export const Members = () => {
     transformData(filteredByGroup(currentUser?.scrappedData));
   }, [currentUser, activeMainFilter, visibleColumns]);
 
-  useEffect(() => {
-    if (currentUser) {
-      setTimeout(() => {
-        refresh();
-      }, 500);
-    }
-  }, []);
 
   return (
     <>

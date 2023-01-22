@@ -13,6 +13,7 @@ export const StartPage = () => {
       navigate(isLogged ? "/main/integrations" : "/login");
     }, 2000);
   }, []);
+
   return (
     <StartPageWrapper>
       <Spin size="large" />
@@ -24,6 +25,6 @@ export const StartPageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vh;
+  width: 100%;
   height: 100vh;
 `;
