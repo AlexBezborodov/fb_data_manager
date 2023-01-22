@@ -41,42 +41,42 @@ export const Members = () => {
       dataIndex: "q1",
       sorter: (a, b) => a.q1.localeCompare(b.q1),
       visible: true,
-      Width: 200,
+      width: 150,
     },
     {
       title: "Answer1",
       dataIndex: "a1",
       sorter: (a, b) => a.a1.localeCompare(b.a1),
       visible: true,
-      Width: 200,
+      width: 150,
     },
     {
       title: "Q2",
       dataIndex: "q2",
       sorter: (a, b) => a.q2.localeCompare(b.q2),
       visible: true,
-      Width: 200,
+      width: 150,
     },
     {
       title: "Answer2",
       dataIndex: "a2",
       sorter: (a, b) => a.a2.localeCompare(b.a2),
       visible: true,
-      Width: 200,
+      width: 150,
     },
     {
       title: "Q3",
       dataIndex: "q3",
       sorter: (a, b) => a.q3.localeCompare(b.q3),
       visible: false,
-      Width: 200,
+      width: 150,
     },
     {
       title: "Answer3",
       dataIndex: "a3",
       sorter: (a, b) => a.a3.localeCompare(b.a3),
       visible: false,
-      Width: 200,
+      width: 200,
     },
     {
       title: "Profile Link",
@@ -356,9 +356,11 @@ export const Members = () => {
   }, [currentUser, activeMainFilter, visibleColumns]);
 
   useEffect(() => {
-    setTimeout(() => {
-      refresh();
-    }, 500);
+    if (currentUser) {
+      setTimeout(() => {
+        refresh();
+      }, 500);
+    }
   }, []);
 
   return (

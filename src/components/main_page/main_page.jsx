@@ -45,17 +45,19 @@ export const MainPage = () => {
   };
 
   const updateUserData = async (updLists, userId) => {
-    const updatedData = {
-      ...currentUser,
-      lists: updLists,
-    };
-    await axios
-      .patch(`${BASIC_DB_URL}/users/user${userId}.json`, updatedData, CONFIG)
-      .then((res) => {
-        if (res.status === 200) {
-          setCurrentUser(res.data);
-        }
-      });
+    if (userId) {
+      const updatedData = {
+        ...currentUser,
+        lists: updLists,
+      };
+      await axios
+        .patch(`${BASIC_DB_URL}/users/user${userId}.json`, updatedData, CONFIG)
+        .then((res) => {
+          if (res.status === 200) {
+            setCurrentUser(res.data);
+          }
+        });
+    }
   };
   const getCurrentPlan = (currentPlan) => {
     axios
@@ -122,7 +124,7 @@ export const MainPage = () => {
       updatedLists = lists;
     }
 
-    updateUserData(updatedLists, currentUser.userId);
+    await updateUserData(updatedLists, currentUser.userId);
   };
 
   useEffect(() => {
