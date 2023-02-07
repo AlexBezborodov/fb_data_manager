@@ -34,16 +34,16 @@ export const Groups = () => {
         </a>
       ),
     },
-    {
-      title: "Spreadsheet link",
-      dataIndex: "slink",
-      Width: 150,
-      render: (text) => (
-        <a href={text} target="_blank" rel="noreferrer">
-          {text}
-        </a>
-      ),
-    },
+    // {
+    //   title: "Spreadsheet link",
+    //   dataIndex: "slink",
+    //   Width: 150,
+    //   render: (text) => (
+    //     <a href={text} target="_blank" rel="noreferrer">
+    //       {text}
+    //     </a>
+    //   ),
+    // },
     {
       title: "Actions",
       dataIndex: "actions",

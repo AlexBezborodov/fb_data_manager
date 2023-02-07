@@ -121,7 +121,6 @@ export const MainPage = () => {
     } else {
       updatedLists = lists;
     }
-
     await updateUserData(updatedLists, currentUser.userId);
   };
 

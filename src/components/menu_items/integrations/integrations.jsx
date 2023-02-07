@@ -31,10 +31,10 @@ export const Integrations = () => {
       title: "Add FB group",
       content: <FirstStep {...{ data, inputHandler }} />,
     },
-    {
-      title: "Add your google sheet",
-      content: <SecondStep {...{ data, inputHandler }} />,
-    },
+    // {
+    //   title: "Add your google sheet",
+    //   content: <SecondStep {...{ data, inputHandler }} />,
+    // },
     {
       title: "Finish",
       content: <ThirdStep {...{ data }} />,
@@ -65,7 +65,7 @@ export const Integrations = () => {
       groupName: data.fbName,
       groupLink: data.fbLink,
       groupId: data.fbLink.replace(/\D/g, ""),
-      spreadsheetLink: data.gsheetLink,
+      spreadsheetLink: data.gsheetLink || "empty link",
     };
     const updatedData = currentUser?.fbGroups
       ? [...currentUser.fbGroups, group]
