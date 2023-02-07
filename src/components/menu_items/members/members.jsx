@@ -9,6 +9,7 @@ import {
 import { Button, message, Typography, Input, Avatar } from "antd";
 import axios from "axios";
 import moment from "moment";
+import { CSVLink } from "react-csv";
 
 import { Box } from "../../../global_styles/global_styles";
 import { CurrentUserContext } from "../../../providers/current_user";
@@ -351,17 +352,18 @@ export const Members = () => {
     }
   };
 
+  const transformToCSV = (data) => {
+    const updData = JSON.parse(JSON.stringify(data));
+    return updData.map((item) => {
+      delete item.key;
+      delete item.fbUserId;
+      return item;
+    });
+  };
+
   useEffect(() => {
     transformData(filteredByGroup(currentUser?.scrappedData));
   }, [currentUser, activeMainFilter, visibleColumns]);
-
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     setTimeout(() => {
-  //       refresh();
-  //     }, 500);
-  //   }
-  // }, []);
 
   return (
     <>
@@ -412,6 +414,9 @@ export const Members = () => {
             />
           </ContentContainer>
           <Box m="16px" style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Box m="8px 15px">
+              <CSVLink data={transformToCSV(tableData)}>Download CSV</CSVLink>
+            </Box>
             <Button
               type="primary"
               onClick={() => setListModalOpen(true)}
